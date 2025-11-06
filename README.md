@@ -27,7 +27,7 @@
   - [Performance](#performance)
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
-- [Program Structure](#program-structure)
+- [Project Structure](#project-structure)
 
 ## Purpose
 
@@ -410,7 +410,7 @@ Increase system swap space if needed.
 Check PostgreSQL version.
 Verify all prerequisites are met.
 
-## Program Structure
+## Project Structure
 
 ```bash
 unidb
