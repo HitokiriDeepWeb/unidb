@@ -34,8 +34,7 @@ class PostgreSQLUniprotLifecycle:
     async def execute_database_operations_after_copy(self, pool: Pool) -> None:
         """Create required constraints and indexes after all data was copied."""
         operations: list[Callable] = [
-            self._create_constraints_and_indexes_for_taxonomy,
-            self._create_constraints_and_indexes_for_lineage,
+            self._create_constraints_and_indexes_for_taxonomy_and_lineage,
             self._validate_uniprot_kb_ncbi_ids,
         ]
         if self._trgm_required:
@@ -72,22 +71,12 @@ class PostgreSQLUniprotLifecycle:
         """Add comments to tables and columns."""
         await self._db_adapter.execute_queries_async(pool, q.COMMENT_QUERIES)
 
-    async def _create_constraints_and_indexes_for_taxonomy(self, pool: Pool) -> None:
+    async def _create_constraints_and_indexes_for_taxonomy_and_lineage(
+        self, pool: Pool
+    ) -> None:
         """Create constraints and indexes for taxonomy and lineage tables."""
-        coros: list[Coroutine] = []
-
-        for queries in q.TAXONOMY_CREATE_CONSTRAINTS_AND_IDXS_QUERIES:
-            coros.append(self._db_adapter.execute_queries_sync(pool, queries))
-
-        tasks = create_tasks(coros)
-        await process_tasks(tasks)
-
-    async def _create_constraints_and_indexes_for_lineage(self, pool: Pool) -> None:
-        """Create constraints and indexes for taxonomy and lineage tables."""
-        coros: list[Coroutine] = []
-
-        for queries in q.LINEAGE_CREATE_CONSTRAINTS_AND_IDXS_QUERIES:
-            coros.append(self._db_adapter.execute_queries_sync(pool, queries))
+        queries = q.CREATE_CONSTRAINTS_AND_IDXS_FOR_TAXONOMY_AND_LINEAGE_QUERIES
+        coros: list[Coroutine] = [self._db_adapter.execute_queries_sync(pool, queries)]
 
         tasks = create_tasks(coros)
         await process_tasks(tasks)
