@@ -1,0 +1,44 @@
+from pathlib import Path
+
+import pytest
+
+from core.exceptions import NeighbouringProcessError
+from infrastructure.preparation.prepare_files import concatenate_files
+
+
+@pytest.fixture
+def path_to_file(tmp_path: Path):
+    file_name = "test.txt"
+    base_file = tmp_path / file_name
+
+    for index, word in enumerate(["This", "is", "test"]):
+        with (tmp_path / f"{file_name}.{index}").open("w") as file:
+            file.write(word)
+
+    return base_file
+
+
+def test_concatenate_files(mocker, path_to_file: Path):
+    _mock_is_shutdown_event_set_func(mocker, False)
+    expected_result = "Thisistest"
+
+    concatenate_files(path_to_file)
+    result = path_to_file.open("r").read()
+
+    assert result == expected_result
+
+
+def test_concatenation_is_interrupted_when_shutdown_event_is_true(
+    mocker, path_to_file: Path
+):
+    _mock_is_shutdown_event_set_func(mocker, True)
+
+    with pytest.raises(NeighbouringProcessError):
+        concatenate_files(path_to_file)
+
+
+def _mock_is_shutdown_event_set_func(mocker, flag: bool):
+    return mocker.patch(
+        "infrastructure.preparation.prepare_files.prepare_files.is_shutdown_event_set",
+        return_value=flag,
+    )

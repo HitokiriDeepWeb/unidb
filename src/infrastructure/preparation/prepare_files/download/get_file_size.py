@@ -1,0 +1,44 @@
+import asyncio
+import logging
+
+from aiohttp import ClientError, ClientResponse, ClientSession, ClientTimeout
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
+
+from infrastructure.preparation.common_types import Link
+
+logger = logging.getLogger(__name__)
+
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_fixed(5),
+    retry=retry_if_exception_type((ClientError, asyncio.TimeoutError)),
+)
+async def get_file_size(
+    url: Link, session: ClientSession, timeout: ClientTimeout | None = None
+) -> int:
+    """Get info about file size in bytes from header."""
+    try:
+        return await _try_get_file_size(url, session, timeout)
+
+    except asyncio.TimeoutError:
+        logger.exception(
+            "Too much time to get content size. Retry or check your connection."
+        )
+        raise
+
+
+async def _try_get_file_size(
+    url: Link, session: ClientSession, timeout: ClientTimeout | None = None
+) -> int:
+    async with session.head(url, timeout=timeout) as resp:
+        return _extract_file_size_from_response(resp)
+
+
+def _extract_file_size_from_response(response: ClientResponse) -> int:
+    try:
+        return int(response.headers["Content-Length"])
+
+    except ValueError:
+        logger.exception("Unable to get file size.")
+        raise

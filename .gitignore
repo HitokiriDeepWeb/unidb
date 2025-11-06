@@ -1,0 +1,6 @@
+uniprotdb/
+__pycache__/
+*/__pycache__/
+log/
+*.fasta
+.coverage
