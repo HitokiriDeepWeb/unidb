@@ -229,9 +229,9 @@ python unidb.pex [OPTIONS]
 
 ### Notes
 
-It is recommended to use -j with number of CPU cores.
-The -i (trgm) flag improves sequence search performance but increases database creation time and almost doubles the database size.
-When using -y, all confirmations are accepted automatically.
+It is recommended to use `-j` with number of CPU cores.
+The `-i` (`--trgm`) flag improves sequence search performance but increases database creation time tremendously and doubles the database size.
+When using `-y`, all confirmations are accepted automatically.
 
 Required source files in case you use `--path-to-source-files`, `-k` option:
 
