@@ -119,7 +119,6 @@ def concatenate_files(path_to_file: Path) -> None:
     files = sorted(
         glob.glob(f"{path_to_file}.*"), key=lambda x: int(x.split(".").pop())
     )
-    print(files)
 
     if is_shutdown_event_set():
         raise NeighbouringProcessError
