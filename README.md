@@ -258,6 +258,8 @@ Required archives in case you use `--path-to-source-archives`, `-z` option:
 - **\*nix system** (Linux, macOS)
 - `cat` utility
 - **Internet connection** (unless using pre-downloaded files)
+- **RAM** 4 GB
+- **Disk space** 150 GB (minimum)
 
 To create database without trigram index and download all the files you will need approximately 205 GB free space.
 The database itself after setup will weigh approximately 108 GB.
