@@ -12,7 +12,7 @@ TRUNCATE_ALL_TABLES_QUERY: str = f"""
 
 DROP_TYPE_SOURCE_QUERY: str = """DROP TYPE IF EXISTS sequence_source CASCADE"""
 
-DROP_INDEXES_QUERY: tuple = (
+DROP_IDXS_QUERY: tuple = (
     f"""DROP INDEX IF EXISTS ncbi_organism_id_{Tables.UNIPROT}_idx""",
     f"""DROP INDEX IF EXISTS {Tables.UNIPROT}_source_idx""",
     """DROP INDEX IF EXISTS trgm_sequence_idx""",
@@ -105,7 +105,7 @@ CREATE_UNIPROT_KB_QUERY: str = f"""
                                sequence TEXT)
                                """
 
-CREATE_TAXONOMY_TAX_NAME_INDEX_QUERY: str = f"""
+CREATE_TAXONOMY_TAX_NAME_IDX_QUERY: str = f"""
                                             CREATE UNIQUE INDEX unique_tax_name_idx
                                             ON {Tables.TAXONOMY} (tax_name)
                                             """
@@ -267,19 +267,19 @@ INSERT_INFO_INTO_METADATA: str = f"""
                """
 
 # WARNING! This index will have very large size.
-CREATE_TRGM_INDEX_ON_UNIPROT_KB: str = f"""CREATE INDEX trgm_sequence_idx ON
+CREATE_TRGM_IDX_ON_UNIPROT_KB: str = f"""CREATE INDEX trgm_sequence_idx ON
                                            {Tables.UNIPROT}
                                            USING GIN(sequence gin_trgm_ops)
                                        """
 
-CREATE_TRGM_INDEX_ON_TAXONOMY: str = f"""CREATE INDEX trgm_tax_name_idx ON
+CREATE_TRGM_IDX_ON_TAXONOMY: str = f"""CREATE INDEX trgm_tax_name_idx ON
                                          {Tables.TAXONOMY}
                                          USING GIN(tax_name gin_trgm_ops)
                                      """
 
 REMOVE_DATABASE_QUERIES: tuple = (
     DROP_TYPE_SOURCE_QUERY,
-    DROP_INDEXES_QUERY,
+    DROP_IDXS_QUERY,
     DROP_CONSTRAINTS_UNIPROT_KB_QUERY,
     DROP_CONSTRAINTS_TAXONOMY_QUERY,
     DROP_CONSTRAINTS_LINEAGE_QUERY,
@@ -315,14 +315,14 @@ COMMENT_QUERIES: tuple = (
     INSERT_INFO_INTO_METADATA,
 )
 
-TAXONOMY_CREATE_CONSTRAINTS_AND_INDEXES_QUERIES: tuple = (
-    CREATE_TAXONOMY_TAX_NAME_INDEX_QUERY,
+TAXONOMY_CREATE_CONSTRAINTS_AND_IDXS_QUERIES: tuple = (
+    CREATE_TAXONOMY_TAX_NAME_IDX_QUERY,
     ADD_CONSTRAINTS_TAXONOMY_QUERY,
     ADD_NOT_NULL_CONSTRAINT_TAXONOMY_QUERY,
-    CREATE_TRGM_INDEX_ON_TAXONOMY,
+    CREATE_TRGM_IDX_ON_TAXONOMY,
 )
 
-LINEAGE_CREATE_CONSTRAINTS_AND_INDEXES_QUERIES: tuple = (
+LINEAGE_CREATE_CONSTRAINTS_AND_IDXS_QUERIES: tuple = (
     CREATE_LINEAGE_IDXS_QUERY,
     ADD_CONSTRAINTS_LINEAGE_QUERY,
     ADD_NOT_NULL_CONSTRAINTS_LINEAGE_QUERY,

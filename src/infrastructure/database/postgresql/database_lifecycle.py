@@ -76,7 +76,7 @@ class PostgreSQLUniprotLifecycle:
         """Create constraints and indexes for taxonomy and lineage tables."""
         coros: list[Coroutine] = []
 
-        for queries in q.TAXONOMY_CREATE_CONSTRAINTS_AND_INDEXES_QUERIES:
+        for queries in q.TAXONOMY_CREATE_CONSTRAINTS_AND_IDXS_QUERIES:
             coros.append(self._db_adapter.execute_queries_sync(pool, queries))
 
         tasks = create_tasks(coros)
@@ -86,7 +86,7 @@ class PostgreSQLUniprotLifecycle:
         """Create constraints and indexes for taxonomy and lineage tables."""
         coros: list[Coroutine] = []
 
-        for queries in q.LINEAGE_CREATE_CONSTRAINTS_AND_INDEXES_QUERIES:
+        for queries in q.LINEAGE_CREATE_CONSTRAINTS_AND_IDXS_QUERIES:
             coros.append(self._db_adapter.execute_queries_sync(pool, queries))
 
         tasks = create_tasks(coros)
@@ -105,7 +105,7 @@ class PostgreSQLUniprotLifecycle:
 
     async def _create_trgm_index_for_sequence_column(self, pool: Pool) -> None:
         await self._db_adapter.execute_queries_sync(
-            pool, q.CREATE_TRGM_INDEX_ON_UNIPROT_KB
+            pool, q.CREATE_TRGM_IDX_ON_UNIPROT_KB
         )
 
     async def _execute_reset_operation(self, pool) -> None:
