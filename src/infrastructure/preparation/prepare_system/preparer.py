@@ -37,6 +37,8 @@ class SystemPreparer:
     And clean it afterwards.
     """
 
+    _DECOMPRESSION_COEFF = 1.96
+
     def __init__(self, config: SystemPreparerConfig):
         self._config = config
 
@@ -75,12 +77,10 @@ class SystemPreparer:
         if self._config.download_is_required:
             self._create_neccessary_folders()
 
-    @staticmethod
     def _prompt_user_for_disk_space_confirmation(
-        file_size: float, database_size: float
+        self, file_size: float, database_size: float
     ) -> None:
-        gray_area = 10
-        max_setup_size = file_size + (file_size / 2) + gray_area
+        max_setup_size = file_size + (file_size / self._DECOMPRESSION_COEFF)
         while True:
             prompt: str = (
                 "The files to download approximate size will estimate "
@@ -154,15 +154,13 @@ class SystemPreparer:
 
         return general_file_size
 
-    @staticmethod
-    def _calculate_result_file_size(general_file_size: int) -> float:
+    def _calculate_result_file_size(self, general_file_size: int) -> float:
         assert general_file_size > 0
 
-        decompression_coeff: float = 1.8
         space_for_proper_system_work: int = 10**10
 
         result_file_size = (
-            general_file_size * decompression_coeff
+            general_file_size * self._DECOMPRESSION_COEFF
         ) + space_for_proper_system_work
         return result_file_size
 
