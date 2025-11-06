@@ -324,7 +324,7 @@ The database is made on the basis of two knowledgebases - [UniProtKB](https://ft
 ### Taxonomy
 
 The taxonomy is implemented identical to the NCBI taxonomy. Note that NCBI IDs and organism names may not coincide with data from UniProt knowledgebase.
-The reason is that UniProt updates its taxonomy also once every 8 weeks. However, our database uses NCBI Taxonomy which receives new updates daily so it might happen that version the database uses for update differs from version UniProt did. If you see '_deleted_' in taxonomy list - it means there is <ins>no lineage for this taxon in our database</ins>. For more information about this _taxon_ you should move to [UniProt official site](https://www.uniprot.org/) or [NCBI Taxonomy Browser](https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi).
+The reason is that UniProt updates its taxonomy once every 8 weeks. However, current database uses NCBI Taxonomy which receives new updates daily so it might happen that version the database uses for update differs from version UniProt did. If you see '_deleted_' in taxonomy list - it means there is <ins>no lineage for this taxon in the database</ins>. For more information about this _taxon_ you should move to [UniProt official site](https://www.uniprot.org/) or [NCBI Taxonomy Browser](https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi).
 
 ### Isoforms
 
