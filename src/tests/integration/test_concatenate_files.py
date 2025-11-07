@@ -11,7 +11,21 @@ def path_to_file(tmp_path: Path):
     file_name = "test.txt"
     base_file = tmp_path / file_name
 
-    for index, word in enumerate(["This", "is", "test"]):
+    for index, word in enumerate(
+        [
+            "This ",
+            "is ",
+            "test ",
+            "that ",
+            "will ",
+            "show ",
+            "that ",
+            "the ",
+            "order ",
+            "is ",
+            "correct",
+        ]
+    ):
         with (tmp_path / f"{file_name}.{index}").open("w") as file:
             file.write(word)
 
@@ -20,7 +34,7 @@ def path_to_file(tmp_path: Path):
 
 def test_concatenate_files(mocker, path_to_file: Path):
     _mock_is_shutdown_event_set_func(mocker, False)
-    expected_result = "Thisistest"
+    expected_result = "This is test that will show that the order is correct"
 
     concatenate_files(path_to_file)
     result = path_to_file.open("r").read()
