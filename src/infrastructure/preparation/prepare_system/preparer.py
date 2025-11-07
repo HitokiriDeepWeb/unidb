@@ -21,9 +21,7 @@ from infrastructure.preparation.constants import (
     UNIPROT_SP_LINK,
     UNIPROT_TR_LINK,
 )
-from infrastructure.preparation.prepare_files.download.get_file_size import (
-    get_file_size,
-)
+from infrastructure.preparation.prepare_files.download import get_file_size
 from infrastructure.preparation.prepare_system.config import SystemPreparerConfig
 from infrastructure.preparation.prepare_system.exceptions import NotEnoughSpaceError
 from infrastructure.preparation.prepare_system.models import UserAnswer
@@ -112,11 +110,11 @@ class SystemPreparer:
 
             logger.info("Done")
 
-        coros: list[Coroutine] = [
+        coroutines: list[Coroutine] = [
             _async_delete_file(file) for file in DEFAULT_SOURCE_FILES_FOLDER.iterdir()
         ]
 
-        tasks: list[Task] = create_tasks(coros)
+        tasks: list[Task] = create_tasks(coroutines)
         await process_tasks(tasks)
 
     async def _estimate_required_space_for_files(self) -> float:
@@ -135,14 +133,14 @@ class SystemPreparer:
         async with ClientSession(
             raise_for_status=True, timeout=head_request_timeout
         ) as session:
-            coros = [
+            coroutines = [
                 get_file_size(UNIPROT_TR_LINK, session),
                 get_file_size(UNIPROT_SP_LINK, session),
                 get_file_size(NCBI_LINK, session),
                 get_file_size(UNIPROT_SP_ISOFORMS_LINK, session),
             ]
 
-            tasks = create_tasks(coros)
+            tasks = create_tasks(coroutines)
             done, pending = await asyncio.wait(
                 tasks, return_when=asyncio.FIRST_EXCEPTION
             )

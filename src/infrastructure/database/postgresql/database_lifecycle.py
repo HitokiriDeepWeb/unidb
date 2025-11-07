@@ -37,6 +37,7 @@ class PostgreSQLUniprotLifecycle:
             self._create_constraints_and_indexes_for_taxonomy_and_lineage,
             self._validate_uniprot_kb_ncbi_ids,
         ]
+
         if self._trgm_required:
             operations.append(self._create_trgm_index_for_sequence_column)
 
@@ -76,20 +77,22 @@ class PostgreSQLUniprotLifecycle:
     ) -> None:
         """Create constraints and indexes for taxonomy and lineage tables."""
         queries = q.CREATE_CONSTRAINTS_AND_IDXS_FOR_TAXONOMY_AND_LINEAGE_QUERIES
-        coros: list[Coroutine] = [self._db_adapter.execute_queries_sync(pool, queries)]
+        coroutines: list[Coroutine] = [
+            self._db_adapter.execute_queries_sync(pool, queries)
+        ]
 
-        tasks = create_tasks(coros)
+        tasks = create_tasks(coroutines)
         await process_tasks(tasks)
 
     async def _validate_uniprot_kb_ncbi_ids(self, pool: Pool) -> None:
         """Validate that 'uniprot_kb' and 'taxonomy' tables have the same NCBI ID's."""
-        coros: list[Coroutine] = [
+        coroutines: list[Coroutine] = [
             self._db_adapter.execute_queries_sync(
                 pool, q.UNIPROT_KB_AND_TAXONOMY_VALIDATION_QUERIES
             )
         ]
 
-        tasks = create_tasks(coros)
+        tasks = create_tasks(coroutines)
         await process_tasks(tasks)
 
     async def _create_trgm_index_for_sequence_column(self, pool: Pool) -> None:

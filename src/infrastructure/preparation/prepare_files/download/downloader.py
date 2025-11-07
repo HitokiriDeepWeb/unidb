@@ -72,12 +72,12 @@ class Downloader:
         ]
 
         regular_file_timeout = self._config.SMALL_FILE_TIMEOUT
-        coros: list[Coroutine] = [
+        coroutines: list[Coroutine] = [
             downloader.download_file(timeout=regular_file_timeout)
             for downloader in downloaders
         ]
 
-        tasks = create_tasks(coros)
+        tasks = create_tasks(coroutines)
         return tasks
 
     async def _get_trembl_file_parts_download_tasks(self, session: ClientSession):

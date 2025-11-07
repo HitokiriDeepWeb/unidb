@@ -8,8 +8,8 @@ from threading import Event
 from core.models import FunctionCall
 
 
-def create_tasks(coros: Iterable[Coroutine]) -> list[Task]:
-    return [create_task(coro) for coro in coros]
+def create_tasks(coroutines: Iterable[Coroutine]) -> list[Task]:
+    return [create_task(coro) for coro in coroutines]
 
 
 async def process_futures(
@@ -36,8 +36,7 @@ def cancel_on_error(done: set[Task], pending: set[Task]) -> None:
                 raise exception
 
     finally:
-        for task in pending:
-            task.cancel()
+        [task.cancel() for task in pending]
 
 
 def run_futures(

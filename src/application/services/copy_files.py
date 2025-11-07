@@ -84,7 +84,7 @@ class DatabaseFileCopier:
         Get appropriate iterators that will go through partial TrEMBL data
         and UniProt table that will be populated with this data.
 
-        Impossible to prepare it outside the class because no files are available yet,
+        Impossible to prepare it outside the class because files are not available yet,
         and TrEMBL 'SequenceIterator' uses 'ChunkRange(s)'
         from existing files to be initialized.
         """

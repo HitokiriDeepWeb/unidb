@@ -6,7 +6,7 @@ from typing import Any
 
 def async_timed(func: Callable) -> Callable:
     @functools.wraps(func)
-    async def wrapper(*args, **kwargs) -> Any:
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
         start = perf_counter()
         print(f"Started {func.__name__} with {args}, {kwargs}")
 
