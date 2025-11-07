@@ -62,11 +62,15 @@ class SequenceRecord:
     def __repr__(self) -> str:
         cls = self.__class__
         cls_name = cls.__name__
-        field_repr: list = []
+        field_repr: list[str] = []
         indent: str = " " * len(cls_name)
+
         for field in fields(self):
             value: str = getattr(self, field.name)
+
             if field.name == "sequence":
                 value = reprlib.repr(value)
+
             field_repr.append(f"{indent + field.name}={value!r}")
+
         return f"{cls_name}(\n{',\n'.join(field_repr)}\n)"

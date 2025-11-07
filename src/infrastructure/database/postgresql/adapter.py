@@ -35,11 +35,11 @@ class PostgreSQLAdapter:
 
     async def execute_queries_async(self, pool: Pool, queries: QueryNested) -> None:
         """Execute queries concurrently. Order has no importance."""
-        coros: list[Coroutine] = [
+        coroutines: list[Coroutine] = [
             self._execute_query(pool, query) for query in self._query_gen(queries)
         ]
 
-        tasks = create_tasks(coros)
+        tasks = create_tasks(coroutines)
         await process_tasks(tasks)
 
     async def execute_queries_sync(self, pool: Pool, queries: QueryNested) -> None:

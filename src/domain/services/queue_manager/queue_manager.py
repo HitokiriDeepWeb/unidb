@@ -50,12 +50,12 @@ class AsyncQueueManager:
             await self._graceful_shutdown()
 
     def _create_worker_tasks(self) -> list[Task]:
-        coros = [
+        coroutines = [
             self._worker(self._record_queue)
             for _ in range(self._config.queue_workers_number)
         ]
 
-        tasks = create_tasks(coros)
+        tasks = create_tasks(coroutines)
         return tasks
 
     async def _worker(self, queue: asyncio.Queue) -> None:

@@ -38,14 +38,14 @@ class SetupUniprotDatabase:
 
     async def remove_on_failure(self, files_were_downloaded: bool) -> None:
         """Remove database and source files after unsuccessful setup attempt."""
-        coros: list[Coroutine] = [
+        coroutines: list[Coroutine] = [
             self._uniprot_operator.remove_database(self._db_pool_config)
         ]
 
         if not files_were_downloaded:
-            coros.append(self._system_preparer.delete_unnecessary_files())
+            coroutines.append(self._system_preparer.delete_unnecessary_files())
 
-        tasks = create_tasks(coros)
+        tasks = create_tasks(coroutines)
         await process_tasks(tasks)
 
     async def setup(
@@ -74,12 +74,6 @@ class SetupUniprotDatabase:
 
         elif await self._update_checker.need_update():
             await self._prepare_with_download()
-
-    @staticmethod
-    def _download_is_not_required(
-        files_were_downloaded: bool, archives_were_downloaded: bool
-    ):
-        return files_were_downloaded or archives_were_downloaded
 
     async def _prepare_without_download(self):
         with contextlib.suppress(Exception):
