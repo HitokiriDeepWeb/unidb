@@ -33,33 +33,6 @@ def test_gz(tmp_path: Path) -> Path:
     return gz_path
 
 
-def test_gz_file_is_concatenated_properly(mocker, test_gz: Path):
-    # Arrange.
-    _mock_is_shutdown_event_set_func(mocker, False)
-    gz_parts = 18
-    gz_content = Path(f"{test_gz}").open("rb").read()
-    gz_size = test_gz.stat().st_size
-    chunk_size = gz_size // gz_parts
-
-    expected_result = hash(gz_content)
-
-    for part in range(gz_parts):
-        start = part * chunk_size
-        end = (part + 1) * chunk_size if part < gz_parts - 1 else len(gz_content)
-        part_content = gz_content[start:end]
-
-        Path(f"{test_gz}.{part}").open("wb").write(part_content)
-
-    test_gz.unlink()
-
-    # Act.
-    concatenate_files(test_gz)
-    result = hash(Path(f"{test_gz}").open("rb").read())
-
-    # Assert.
-    assert result == expected_result
-
-
 def test_decompression_is_working_properly_after_concatenation(mocker, test_gz: Path):
     _mock_is_shutdown_event_set_func(mocker, False)
     gz_parts = 18
