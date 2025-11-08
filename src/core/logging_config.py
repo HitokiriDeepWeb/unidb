@@ -16,7 +16,7 @@ def level_filter_maker(level: str) -> Callable:
     return filter
 
 
-LOGGING = {
+logging_config = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -81,7 +81,7 @@ def setup_logging(
     _set_log_handler(log_type, log_path)
     _set_file_log_path(log_type, log_path)
 
-    dictConfig(LOGGING)
+    dictConfig(logging_config)
 
     # log warnings to track deprecation warnings and others.
     logging.captureWarnings(capture=True)
@@ -107,23 +107,23 @@ def _validate_log_level(log_level: str) -> str:
 
 
 def _set_log_level(log_level: str) -> None:
-    LOGGING["loggers"][""]["level"] = log_level
+    logging_config["loggers"][""]["level"] = log_level
 
 
 def _set_file_log_path(log_type: LogType, log_path: Path | None) -> None:
     if log_path and log_type == LogType.FILE:
-        LOGGING["handlers"]["debug_file"]["filename"] = log_path / "debug.log"
-        LOGGING["handlers"]["error_file"]["filename"] = log_path / "error.log"
+        logging_config["handlers"]["debug_file"]["filename"] = log_path / "debug.log"
+        logging_config["handlers"]["error_file"]["filename"] = log_path / "error.log"
     else:
-        LOGGING["handlers"].pop("debug_file")
-        LOGGING["handlers"].pop("error_file")
+        logging_config["handlers"].pop("debug_file")
+        logging_config["handlers"].pop("error_file")
 
 
 def _set_log_handler(log_type: LogType, log_path: Path | None) -> None:
     if log_path and log_type == LogType.FILE:
-        LOGGING["loggers"][""]["handlers"] = ["debug_file", "error_file"]
+        logging_config["loggers"][""]["handlers"] = ["debug_file", "error_file"]
     else:
-        LOGGING["loggers"][""]["handlers"] = ["console"]
+        logging_config["loggers"][""]["handlers"] = ["console"]
 
 
 def _set_log_path(log_path: Path, log_type: LogType) -> None:
@@ -133,6 +133,6 @@ def _set_log_path(log_path: Path, log_type: LogType) -> None:
 
 def _set_formatter(verbose: bool) -> None:
     if not verbose:
-        LOGGING["handlers"]["debug_file"]["formatter"] = "simple"
-        LOGGING["handlers"]["error_file"]["formatter"] = "simple"
-        LOGGING["handlers"]["console"]["formatter"] = "simple"
+        logging_config["handlers"]["debug_file"]["formatter"] = "simple"
+        logging_config["handlers"]["error_file"]["formatter"] = "simple"
+        logging_config["handlers"]["console"]["formatter"] = "simple"
