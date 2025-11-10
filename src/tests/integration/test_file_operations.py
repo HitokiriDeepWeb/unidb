@@ -36,14 +36,15 @@ def test_gz(tmp_path: Path) -> Path:
 
 def _mock_is_shutdown_event_set_func(mocker, flag: bool):
     return mocker.patch(
-        "infrastructure.preparation.prepare_files.prepare_files.is_shutdown_event_set",
+        "infrastructure.preparation.prepare_files.file_operations."
+        "is_shutdown_event_set",
         return_value=flag,
     )
 
 
 def _mock_set_shutdown_event_func(mocker):
     return mocker.patch(
-        "infrastructure.preparation.prepare_files.prepare_files.set_shutdown_event",
+        "infrastructure.preparation.prepare_files.file_operations.set_shutdown_event",
     )
 
 

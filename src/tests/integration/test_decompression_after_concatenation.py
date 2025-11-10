@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from infrastructure.preparation.prepare_files.prepare_files import (
+from infrastructure.preparation.prepare_files.file_operations import (
     concatenate_files,
     decompress_gz,
 )
@@ -60,6 +60,7 @@ def test_decompression_is_working_properly_after_concatenation(mocker, test_gz: 
 
 def _mock_is_shutdown_event_set_func(mocker, flag: bool):
     return mocker.patch(
-        "infrastructure.preparation.prepare_files.prepare_files.is_shutdown_event_set",
+        "infrastructure.preparation.prepare_files.file_operations."
+        "is_shutdown_event_set",
         return_value=flag,
     )
