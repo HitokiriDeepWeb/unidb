@@ -68,13 +68,13 @@ unidb
 │   │   │   │   ├── download
 │   │   │   │   │   ├── config.py
 │   │   │   │   │   ├── downloader.py
-│   │   │   │   │   ├── download_files.py
+│   │   │   │   │   ├── download_components.py
 │   │   │   │   │   ├── file_chunker.py
 │   │   │   │   │   ├── get_file_size.py
 │   │   │   │   │   └── __init__.py
 │   │   │   │   ├── exceptions.py
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── prepare_files.py
+│   │   │   │   ├── file_operations.py
 │   │   │   │   ├── preparer.py
 │   │   │   │   └── update_checker.py
 │   │   │   └── prepare_system
