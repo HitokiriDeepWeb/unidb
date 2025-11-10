@@ -21,7 +21,7 @@ from core.utils import (
     process_tasks,
 )
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
-from infrastructure.preparation.prepare_files.download import get_file_size
+from infrastructure.preparation.get_file_size import get_file_size
 from infrastructure.preparation.prepare_system.config import SystemPreparerConfig
 from infrastructure.preparation.prepare_system.exceptions import NotEnoughSpaceError
 from infrastructure.preparation.prepare_system.models import UserAnswer

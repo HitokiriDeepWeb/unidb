@@ -63,13 +63,13 @@ unidb/
 │   │   ├── models.py
 │   │   ├── preparation
 │   │   │   ├── common_types.py
+│   │   │   ├── get_file_size.py
 │   │   │   ├── __init__.py
 │   │   │   ├── prepare_files
 │   │   │   │   ├── download
 │   │   │   │   │   ├── downloader_components.py
 │   │   │   │   │   ├── downloader.py
 │   │   │   │   │   ├── file_chunker.py
-│   │   │   │   │   ├── get_file_size.py
 │   │   │   │   │   └── __init__.py
 │   │   │   │   ├── exceptions.py
 │   │   │   │   ├── file_operations.py
