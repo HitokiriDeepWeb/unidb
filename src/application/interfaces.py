@@ -29,6 +29,7 @@ class UniprotLifecycleProtocol(Protocol):
         Execute queries that will create required constraints and indexes
         after all data was copied.
         """
+        pass
 
     @abstractmethod
     async def reset_database(self, pool: Any) -> None:
