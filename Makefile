@@ -1,5 +1,5 @@
 # Run all tests.
-tests:
+test:
 	pytest
 
 unit:
