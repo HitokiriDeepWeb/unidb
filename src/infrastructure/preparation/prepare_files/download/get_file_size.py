@@ -1,9 +1,10 @@
 import asyncio
 import logging
 
-from aiohttp import ClientError, ClientResponse, ClientSession, ClientTimeout
+from aiohttp import ClientResponse, ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from core.config import NETWORK_ERRORS
 from infrastructure.preparation.common_types import Link
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_fixed(5),
-    retry=retry_if_exception_type((ClientError, asyncio.TimeoutError)),
+    retry=retry_if_exception_type(NETWORK_ERRORS),
 )
 async def get_file_size(
     url: Link, session: ClientSession, timeout: ClientTimeout | None = None

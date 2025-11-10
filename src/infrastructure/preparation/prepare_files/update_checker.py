@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from pathlib import Path
 
@@ -7,7 +6,7 @@ from aiohttp import ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 from application.services.exceptions import NoUpdateRequired
-from core.config import LAST_MODIFIED_DATE, UNIPROT_SP_LINK
+from core.config import LAST_MODIFIED_DATE, NETWORK_ERRORS, UNIPROT_SP_LINK
 from infrastructure.preparation.common_types import Link
 
 logger = logging.getLogger(__name__)
@@ -62,7 +61,7 @@ class UpdateChecker:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_fixed(5),
-        retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
+        retry=retry_if_exception_type(NETWORK_ERRORS),
     )
     async def _get_modification_date(self, session: ClientSession) -> str:
         try:

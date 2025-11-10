@@ -5,11 +5,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import aiofiles
-import aiohttp
 from aiohttp import ClientResponse, ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
-from core.config import CHUNK_SIZE
+from core.config import CHUNK_SIZE, NETWORK_ERRORS
 from domain.models import ChunkRange
 from infrastructure.preparation.common_types import Link
 from infrastructure.preparation.prepare_files.download.file_chunker import (
@@ -60,7 +59,7 @@ class _FileDownloader:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_fixed(5),
-        retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
+        retry=retry_if_exception_type(NETWORK_ERRORS),
     )
     async def _try_execute_http_download(
         self,

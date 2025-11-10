@@ -1,6 +1,8 @@
+import asyncio
 from asyncio import Semaphore
 from pathlib import Path
 
+import aiohttp
 from aiohttp import ClientTimeout
 
 from domain.entities import BASE_DIR
@@ -57,3 +59,10 @@ NCBI_LINK: Link = Link(
 )
 
 LAST_MODIFIED_DATE: Path = BASE_DIR / "last_modified.txt"
+
+NETWORK_ERRORS = (
+    aiohttp.ClientError,
+    asyncio.TimeoutError,
+    ConnectionAbortedError,
+    aiohttp.ClientConnectionError,
+)
