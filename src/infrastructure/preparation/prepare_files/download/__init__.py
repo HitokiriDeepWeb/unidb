@@ -1,4 +1,4 @@
-from .download_files import FullFileDownloader, PartOfFileDownloader
+from .download_components import FullFileDownloader, PartOfFileDownloader
 from .downloader import Downloader
 from .file_chunker import FileChunkCalculator
 from .get_file_size import get_file_size
