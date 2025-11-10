@@ -173,6 +173,12 @@ python unidb.pex [OPTIONS]
 - Type: flag
 - Example: `--verbose`
 
+`--no-clean-up-on-failure`, `-g`
+
+- Description: Prevent source files and database clean up on failure
+- Type: flag
+- Example: `--no-clean-up-on-failure`
+
 `--logtype`, `-t`
 
 - Description: Log output destination
