@@ -20,8 +20,8 @@ from infrastructure.preparation.prepare_files.download.config import (
     DownloadConfig,
 )
 from infrastructure.preparation.prepare_files.download.download_files import (
-    DownloadFullFile,
-    DownloadPartOfFile,
+    FullFileDownloader,
+    PartOfFileDownloader,
 )
 from infrastructure.preparation.prepare_files.download.file_chunker import (
     FileChunkCalculator,
@@ -64,8 +64,8 @@ class Downloader:
             DownloadArgs(url=NCBI_LINK, path_to_save=DEFAULT_SOURCE_FILES_FOLDER),
         ]
 
-        downloaders: list[DownloadFullFile] = [
-            DownloadFullFile(
+        downloaders: list[FullFileDownloader] = [
+            FullFileDownloader(
                 session, kwargs["url"], kwargs["path_to_save"], self._config
             )
             for kwargs in download_args
@@ -112,7 +112,7 @@ class Downloader:
         tasks: list[Task] = []
 
         for file_part in range(file_parts_quantity):
-            part_downloader = DownloadPartOfFile(
+            part_downloader = PartOfFileDownloader(
                 session=session,
                 url=url,
                 file_part_number=file_part,

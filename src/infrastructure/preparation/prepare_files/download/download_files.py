@@ -18,7 +18,7 @@ from infrastructure.preparation.prepare_files.download.file_chunker import (
 logger = logging.getLogger(__name__)
 
 
-class FileDownloader:
+class _FileDownloader:
     def __init__(
         self,
         session: ClientSession,
@@ -82,7 +82,7 @@ class FileDownloader:
                 await output_file.write(chunk)
 
 
-class DownloadFullFile:
+class FullFileDownloader:
     """Download regular sized file fully."""
 
     def __init__(
@@ -94,7 +94,7 @@ class DownloadFullFile:
     ):
         self._url = url
         self._path_to_save = path_to_save
-        self._file_downloader = FileDownloader(session, url, config)
+        self._file_downloader = _FileDownloader(session, url, config)
 
     async def download_file(self, timeout: ClientTimeout) -> None:
         file_name = self._file_downloader.extract_file_name_from_url()
@@ -118,7 +118,7 @@ class DownloadFullFile:
             raise
 
 
-class DownloadPartOfFile:
+class PartOfFileDownloader:
     """Download part of the file."""
 
     def __init__(
@@ -131,7 +131,7 @@ class DownloadPartOfFile:
         file_chunker: FileChunkCalculator,
     ):
         self._path_to_save = path_to_save
-        self._file_downloader = FileDownloader(session, url, config)
+        self._file_downloader = _FileDownloader(session, url, config)
         self._file_part_number = file_part_number
         self._file_chunker = file_chunker
 

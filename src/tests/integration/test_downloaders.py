@@ -7,12 +7,12 @@ from aioresponses import aioresponses
 from infrastructure.preparation.common_types import Link
 from infrastructure.preparation.prepare_files.download import (
     DownloadConfig,
-    DownloadFullFile,
-    DownloadPartOfFile,
     FileChunkCalculator,
+    FullFileDownloader,
+    PartOfFileDownloader,
 )
 from infrastructure.preparation.prepare_files.download.download_files import (
-    FileDownloader,
+    _FileDownloader,
 )
 
 
@@ -29,7 +29,7 @@ async def test_full_file_downloader(tmp_path: Path):
         with aioresponses() as mock:
             mock.get(test_link, status=200, body=test_body)
 
-            downloader = DownloadFullFile(
+            downloader = FullFileDownloader(
                 session=session, url=test_link, path_to_save=tmp_path, config=config
             )
             await downloader.download_file(timeout=DownloadConfig.SMALL_FILE_TIMEOUT)
@@ -57,7 +57,7 @@ async def test_part_file_downloader(tmp_path: Path):
         with aioresponses() as mock:
             mock.get(test_link, status=206, body=test_body)
 
-            downloader = DownloadPartOfFile(
+            downloader = PartOfFileDownloader(
                 session=session,
                 url=test_link,
                 file_part_number=file_part_number,
@@ -88,7 +88,7 @@ async def test_file_downloader_was_retried_until_complete(tmp_path: Path):
             mock.get(test_link, status=500)
             mock.get(test_link, status=200, body=test_body)
 
-            downloader = FileDownloader(session=session, url=test_link, config=config)
+            downloader = _FileDownloader(session=session, url=test_link, config=config)
             await downloader.execute_http_download(
                 path_to_file=path_to_file, timeout=DownloadConfig.SMALL_FILE_TIMEOUT
             )
