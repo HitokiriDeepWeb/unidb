@@ -1,3 +1,4 @@
+from functools import partial
 from pathlib import Path
 
 from application.models import IteratorToTable
@@ -8,9 +9,7 @@ from infrastructure.process_data.ncbi import (
     PresenterType,
     TaxonomyIterator,
 )
-from infrastructure.process_data.uniprot.fasta import (
-    FastaIterator,
-)
+from infrastructure.process_data.uniprot.fasta import FastaIterator
 
 
 def stick_iterators_to_tables(source_folder: Path) -> list[IteratorToTable]:
@@ -44,3 +43,16 @@ def stick_iterators_to_tables(source_folder: Path) -> list[IteratorToTable]:
         IteratorToTable(iterator=swiss_prot_isoforms, table=Tables.UNIPROT),
     ]
     return iterators_to_tables
+
+
+def create_trembl_iterator_partial(source_folder: Path) -> partial[FastaIterator]:
+    sequence_iterator_partial = partial(
+        FastaIterator, source_folder / UniprotFiles.TREMBL
+    )
+    return sequence_iterator_partial
+
+
+def calculate_workers_to_split_trembl_file(workers_number: int) -> int:
+    workers_number_for_small_files = 1
+    trembl_workers = workers_number - workers_number_for_small_files
+    return trembl_workers if trembl_workers > 0 else 1
