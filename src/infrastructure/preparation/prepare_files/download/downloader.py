@@ -26,11 +26,9 @@ from infrastructure.preparation.get_file_size import (
     get_file_size,
 )
 from infrastructure.preparation.prepare_files.download.downloader_components import (
+    FileChunkCalculator,
     FullFileDownloader,
     PartOfFileDownloader,
-)
-from infrastructure.preparation.prepare_files.download.file_chunker import (
-    FileChunkCalculator,
 )
 
 

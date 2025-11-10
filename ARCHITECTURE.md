@@ -69,7 +69,6 @@ unidb/
 │   │   │   │   ├── download
 │   │   │   │   │   ├── downloader_components.py
 │   │   │   │   │   ├── downloader.py
-│   │   │   │   │   ├── file_chunker.py
 │   │   │   │   │   └── __init__.py
 │   │   │   │   ├── exceptions.py
 │   │   │   │   ├── file_operations.py

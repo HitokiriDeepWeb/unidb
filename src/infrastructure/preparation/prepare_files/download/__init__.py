@@ -1,6 +1,9 @@
 from .downloader import Downloader
-from .downloader_components import FullFileDownloader, PartOfFileDownloader
-from .file_chunker import FileChunkCalculator
+from .downloader_components import (
+    FileChunkCalculator,
+    FullFileDownloader,
+    PartOfFileDownloader,
+)
 
 __all__ = (
     "Downloader",

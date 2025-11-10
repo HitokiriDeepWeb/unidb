@@ -11,76 +11,36 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 from core.config import CHUNK_SIZE, NETWORK_ERRORS
 from domain.models import ChunkRange
 from infrastructure.preparation.common_types import Link
-from infrastructure.preparation.prepare_files.download.file_chunker import (
-    FileChunkCalculator,
-)
 
 logger = logging.getLogger(__name__)
 
 
-class _FileDownloader:
-    def __init__(
-        self,
-        session: ClientSession,
-        url: Link,
-        semaphore: Semaphore,
-    ):
-        self._session = session
-        self._url = url
-        self._semaphore = semaphore
-        self._chunk_size = CHUNK_SIZE
+class FileChunkCalculator:
+    """Calculate file chunk ranges for partial download."""
 
-    def extract_file_name_from_url(self) -> str:
-        return Path(urlparse(self._url).path).name
+    def __init__(self, file_size: int, total_chunk_quantity: int):
+        self._file_size = file_size
+        self._total_chunk_quantity = total_chunk_quantity
+        self._chunk_size = file_size // total_chunk_quantity
 
-    def set_file_path(self, path_to_save: Path, file_name: str) -> Path:
-        path_to_file = path_to_save / file_name
-        return path_to_file
+    def get_chunk_range(self, chunk_number: int) -> ChunkRange:
+        chunk_start = self._calculate_chunk_start(chunk_number)
+        chunk_end = self._calculate_chunk_end(chunk_number, chunk_start)
+        return ChunkRange(chunk_start, chunk_end)
 
-    async def execute_http_download(
-        self,
-        path_to_file: Path,
-        timeout: ClientTimeout,
-        headers: dict[str, str] | None = None,
-    ) -> None:
-        file_name = self.extract_file_name_from_url()
+    def _calculate_chunk_start(self, chunk_number: int) -> int:
+        """Calculate the start of the chunk."""
+        return self._chunk_size * chunk_number
 
-        try:
-            await self._try_execute_http_download(path_to_file, timeout, headers)
+    def _calculate_chunk_end(self, chunk_number: int, chunk_start: int) -> int:
+        """Calculate the end of the chunk."""
+        redundant_byte_offset: int = 1
+        redundant_index_offset: int = 1
 
-        except asyncio.TimeoutError:
-            logger.exception("Unable to download %s, check your connection", file_name)
-            raise
+        if chunk_number < self._total_chunk_quantity - redundant_index_offset:
+            return chunk_start + self._chunk_size - redundant_byte_offset
 
-        except Exception:
-            logger.exception("Unable to download %s", file_name)
-            raise
-
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_fixed(5),
-        retry=retry_if_exception_type(NETWORK_ERRORS),
-    )
-    async def _try_execute_http_download(
-        self,
-        path_to_file: Path,
-        timeout: ClientTimeout,
-        headers: dict[str, str] | None = None,
-    ) -> None:
-        """Download file and write its content to file."""
-        async with (
-            self._semaphore,
-            self._session.get(self._url, headers=headers, timeout=timeout) as resp,
-        ):
-            await self._write_chunks_to_file(resp, path_to_file)
-
-    async def _write_chunks_to_file(
-        self, response: ClientResponse, path_to_file: Path
-    ) -> None:
-        """Write downloaded content to file piece by piece."""
-        async with aiofiles.open(path_to_file, mode="wb") as output_file:
-            async for chunk in response.content.iter_chunked(self._chunk_size):
-                await output_file.write(chunk)
+        return self._file_size - redundant_byte_offset
 
 
 class FullFileDownloader:
@@ -187,3 +147,68 @@ class PartOfFileDownloader:
             self._file_part_number
         )
         return {"Range": f"bytes={chunk_range.start}-{chunk_range.end}"}
+
+
+class _FileDownloader:
+    def __init__(
+        self,
+        session: ClientSession,
+        url: Link,
+        semaphore: Semaphore,
+    ):
+        self._session = session
+        self._url = url
+        self._semaphore = semaphore
+        self._chunk_size = CHUNK_SIZE
+
+    def extract_file_name_from_url(self) -> str:
+        return Path(urlparse(self._url).path).name
+
+    def set_file_path(self, path_to_save: Path, file_name: str) -> Path:
+        path_to_file = path_to_save / file_name
+        return path_to_file
+
+    async def execute_http_download(
+        self,
+        path_to_file: Path,
+        timeout: ClientTimeout,
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        file_name = self.extract_file_name_from_url()
+
+        try:
+            await self._try_execute_http_download(path_to_file, timeout, headers)
+
+        except asyncio.TimeoutError:
+            logger.exception("Unable to download %s, check your connection", file_name)
+            raise
+
+        except Exception:
+            logger.exception("Unable to download %s", file_name)
+            raise
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_fixed(5),
+        retry=retry_if_exception_type(NETWORK_ERRORS),
+    )
+    async def _try_execute_http_download(
+        self,
+        path_to_file: Path,
+        timeout: ClientTimeout,
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        """Download file and write its content to file."""
+        async with (
+            self._semaphore,
+            self._session.get(self._url, headers=headers, timeout=timeout) as resp,
+        ):
+            await self._write_chunks_to_file(resp, path_to_file)
+
+    async def _write_chunks_to_file(
+        self, response: ClientResponse, path_to_file: Path
+    ) -> None:
+        """Write downloaded content to file piece by piece."""
+        async with aiofiles.open(path_to_file, mode="wb") as output_file:
+            async for chunk in response.content.iter_chunked(self._chunk_size):
+                await output_file.write(chunk)
