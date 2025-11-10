@@ -84,7 +84,7 @@ This util will create UniProt database using official data from [UniProt FTP sit
 
 ## Installation
 
-Download the `unidb.pex` file.
+Download the `unidb.pex` file from [_Releases_](https://github.com/HitokiriDeepWeb/unidb/releases/latest).
 
 ## Usage
 
@@ -230,7 +230,7 @@ python unidb.pex [OPTIONS]
 
 It is recommended to use `-j` with number of CPU cores.
 The `-i` (`--trgm`) flag improves sequence search performance but increases database creation time tremendously and doubles the database size.
-When using `-y`, all confirmations are accepted automatically.
+When using `-y`, all confirmations are accepted automatically. If no source files provided - they will be downloaded automatically.
 
 Required source files in case you use `--path-to-source-files`, `-k` option:
 
