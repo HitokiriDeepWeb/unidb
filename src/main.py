@@ -28,7 +28,7 @@ logger = setup_logging(
 # ruff: noqa: E402
 from application.services import (
     DatabaseFileCopier,
-    SetupUniprotDatabase,
+    UniprotDatabaseSetup,
     UniprotOperator,
 )
 from application.services.exceptions import NoUpdateRequired
@@ -64,6 +64,7 @@ from infrastructure.process_data.uniprot.fasta import ChunkRangeIterator
 
 path_to_source_files: Path | None = app_args.path_to_source_files
 path_to_source_archives: Path | None = app_args.path_to_source_archives
+no_clean_up: bool = app_args.no_clean_up_on_failure
 
 files_were_downloaded: bool = False
 archives_were_downloaded: bool = False
@@ -114,8 +115,9 @@ async def setup_uniprot_database() -> None:
         return
 
     except Exception:
-        await uniprot_setup.remove_on_failure(files_were_downloaded)
-        logger.info("Removing database and downloaded files")
+        if not no_clean_up:
+            await uniprot_setup.remove_on_failure(files_were_downloaded)
+            logger.info("Removing database and downloaded files")
         raise
 
 
@@ -162,7 +164,7 @@ async def _compose_dependencies():
         source_folder=source_folder, preparation_is_required=preparation_is_required
     )
 
-    uniprot_setup = SetupUniprotDatabase(
+    uniprot_setup = UniprotDatabaseSetup(
         uniprot_operator=uniprot_operator,
         update_checker=update_checker,
         db_pool_config=asdict(connection_pool_config),
@@ -227,4 +229,5 @@ def _get_database_file_copier(
     return db_copier
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

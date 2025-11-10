@@ -22,7 +22,7 @@ from domain.services.queue_manager import QueueConfig
 
 class DatabaseFileCopier:
     """
-    Manage database data copy using BatchCopier.
+    Manage data copy to database using BatchCopier.
     Prepares TrEMBL iterators right before copy.
     """
 

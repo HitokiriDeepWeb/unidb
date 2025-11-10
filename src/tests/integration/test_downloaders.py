@@ -4,15 +4,15 @@ import pytest
 from aiohttp import ClientSession
 from aioresponses import aioresponses
 
+from core.config import SEMAPHORE, SMALL_FILE_TIMEOUT
 from infrastructure.preparation.common_types import Link
 from infrastructure.preparation.prepare_files.download import (
-    DownloadConfig,
-    DownloadFullFile,
-    DownloadPartOfFile,
     FileChunkCalculator,
+    FullFileDownloader,
+    PartOfFileDownloader,
 )
-from infrastructure.preparation.prepare_files.download.download_files import (
-    FileDownloader,
+from infrastructure.preparation.prepare_files.download.download_components import (
+    _FileDownloader,
 )
 
 
@@ -20,7 +20,6 @@ from infrastructure.preparation.prepare_files.download.download_files import (
 async def test_full_file_downloader(tmp_path: Path):
     # Arrange.
     test_body = b"Successful test"
-    config = DownloadConfig()
     test_link = Link("http://example.com/test.txt")
     path_to_file = tmp_path / "test.txt"
 
@@ -29,10 +28,13 @@ async def test_full_file_downloader(tmp_path: Path):
         with aioresponses() as mock:
             mock.get(test_link, status=200, body=test_body)
 
-            downloader = DownloadFullFile(
-                session=session, url=test_link, path_to_save=tmp_path, config=config
+            downloader = FullFileDownloader(
+                session=session,
+                url=test_link,
+                path_to_save=tmp_path,
+                semaphore=SEMAPHORE,
             )
-            await downloader.download_file(timeout=DownloadConfig.SMALL_FILE_TIMEOUT)
+            await downloader.download_file(timeout=SMALL_FILE_TIMEOUT)
 
     result = path_to_file.open("rb").read()
 
@@ -43,7 +45,6 @@ async def test_full_file_downloader(tmp_path: Path):
 @pytest.mark.asyncio
 async def test_part_file_downloader(tmp_path: Path):
     # Arrange.
-    config = DownloadConfig()
     file_part_number = 1
     test_body = b"Successful test"
     file_size = len(test_body)
@@ -57,15 +58,15 @@ async def test_part_file_downloader(tmp_path: Path):
         with aioresponses() as mock:
             mock.get(test_link, status=206, body=test_body)
 
-            downloader = DownloadPartOfFile(
+            downloader = PartOfFileDownloader(
                 session=session,
                 url=test_link,
                 file_part_number=file_part_number,
                 path_to_save=tmp_path,
-                config=config,
+                semaphore=SEMAPHORE,
                 file_chunker=chunk_calculator,
             )
-            await downloader.download_file(timeout=DownloadConfig.SMALL_FILE_TIMEOUT)
+            await downloader.download_file(timeout=SMALL_FILE_TIMEOUT)
 
     result = (tmp_path / f"test.txt.{file_part_number}").open("rb").read()
 
@@ -77,7 +78,6 @@ async def test_part_file_downloader(tmp_path: Path):
 async def test_file_downloader_was_retried_until_complete(tmp_path: Path):
     # Arrange.
     test_body = b"Successful test"
-    config = DownloadConfig()
     test_link = Link("http://example.com/test.txt")
     path_to_file = tmp_path / "test.txt"
 
@@ -88,9 +88,11 @@ async def test_file_downloader_was_retried_until_complete(tmp_path: Path):
             mock.get(test_link, status=500)
             mock.get(test_link, status=200, body=test_body)
 
-            downloader = FileDownloader(session=session, url=test_link, config=config)
+            downloader = _FileDownloader(
+                session=session, url=test_link, semaphore=SEMAPHORE
+            )
             await downloader.execute_http_download(
-                path_to_file=path_to_file, timeout=DownloadConfig.SMALL_FILE_TIMEOUT
+                path_to_file=path_to_file, timeout=SMALL_FILE_TIMEOUT
             )
 
     result = path_to_file.open("rb").read()

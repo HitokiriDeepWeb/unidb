@@ -1,16 +1,16 @@
 import asyncio
 import logging
+from asyncio import Semaphore
 from pathlib import Path
 from urllib.parse import urlparse
 
 import aiofiles
-import aiohttp
 from aiohttp import ClientResponse, ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from core.config import CHUNK_SIZE, NETWORK_ERRORS
 from domain.models import ChunkRange
 from infrastructure.preparation.common_types import Link
-from infrastructure.preparation.prepare_files.download.config import DownloadConfig
 from infrastructure.preparation.prepare_files.download.file_chunker import (
     FileChunkCalculator,
 )
@@ -18,16 +18,17 @@ from infrastructure.preparation.prepare_files.download.file_chunker import (
 logger = logging.getLogger(__name__)
 
 
-class FileDownloader:
+class _FileDownloader:
     def __init__(
         self,
         session: ClientSession,
         url: Link,
-        config: DownloadConfig,
+        semaphore: Semaphore,
     ):
         self._session = session
         self._url = url
-        self._config = config
+        self._semaphore = semaphore
+        self._chunk_size = CHUNK_SIZE
 
     def extract_file_name_from_url(self) -> str:
         return Path(urlparse(self._url).path).name
@@ -58,7 +59,7 @@ class FileDownloader:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_fixed(5),
-        retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
+        retry=retry_if_exception_type(NETWORK_ERRORS),
     )
     async def _try_execute_http_download(
         self,
@@ -68,7 +69,7 @@ class FileDownloader:
     ) -> None:
         """Download file and write its content to file."""
         async with (
-            self._config.SEMAPHORE,
+            self._semaphore,
             self._session.get(self._url, headers=headers, timeout=timeout) as resp,
         ):
             await self._write_chunks_to_file(resp, path_to_file)
@@ -78,11 +79,11 @@ class FileDownloader:
     ) -> None:
         """Write downloaded content to file piece by piece."""
         async with aiofiles.open(path_to_file, mode="wb") as output_file:
-            async for chunk in response.content.iter_chunked(self._config.CHUNK_SIZE):
+            async for chunk in response.content.iter_chunked(self._chunk_size):
                 await output_file.write(chunk)
 
 
-class DownloadFullFile:
+class FullFileDownloader:
     """Download regular sized file fully."""
 
     def __init__(
@@ -90,11 +91,11 @@ class DownloadFullFile:
         session: ClientSession,
         url: Link,
         path_to_save: Path,
-        config: DownloadConfig,
+        semaphore: Semaphore,
     ):
         self._url = url
         self._path_to_save = path_to_save
-        self._file_downloader = FileDownloader(session, url, config)
+        self._file_downloader = _FileDownloader(session, url, semaphore)
 
     async def download_file(self, timeout: ClientTimeout) -> None:
         file_name = self._file_downloader.extract_file_name_from_url()
@@ -118,7 +119,7 @@ class DownloadFullFile:
             raise
 
 
-class DownloadPartOfFile:
+class PartOfFileDownloader:
     """Download part of the file."""
 
     def __init__(
@@ -127,11 +128,11 @@ class DownloadPartOfFile:
         url: Link,
         file_part_number: int,
         path_to_save: Path,
-        config: DownloadConfig,
+        semaphore: Semaphore,
         file_chunker: FileChunkCalculator,
     ):
         self._path_to_save = path_to_save
-        self._file_downloader = FileDownloader(session, url, config)
+        self._file_downloader = _FileDownloader(session, url, semaphore)
         self._file_part_number = file_part_number
         self._file_chunker = file_chunker
 

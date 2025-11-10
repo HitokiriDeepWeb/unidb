@@ -17,7 +17,7 @@ from core.interfaces import StringKeyMapping
 from core.utils import create_tasks, init_shutdown_event, process_tasks
 
 
-class SetupUniprotDatabase:
+class UniprotDatabaseSetup:
     def __init__(
         self,
         uniprot_operator: UniprotOperator,

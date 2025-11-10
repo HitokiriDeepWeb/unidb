@@ -8,19 +8,19 @@ from pathlib import Path
 from aiofiles import os as async_os
 from aiohttp import ClientSession, ClientTimeout
 
-from core.utils import (
-    cancel_on_error,
-    create_tasks,
-    process_tasks,
-)
-from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
-from infrastructure.preparation.constants import (
+from core.config import (
     LAST_MODIFIED_DATE,
     NCBI_LINK,
     UNIPROT_SP_ISOFORMS_LINK,
     UNIPROT_SP_LINK,
     UNIPROT_TR_LINK,
 )
+from core.utils import (
+    cancel_on_error,
+    create_tasks,
+    process_tasks,
+)
+from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
 from infrastructure.preparation.prepare_files.download import get_file_size
 from infrastructure.preparation.prepare_system.config import SystemPreparerConfig
 from infrastructure.preparation.prepare_system.exceptions import NotEnoughSpaceError
@@ -39,6 +39,11 @@ class SystemPreparer:
 
     def __init__(self, config: SystemPreparerConfig):
         self._config = config
+        self._uniprot_tr_link = UNIPROT_TR_LINK
+        self._uniprot_sp_isoforms_link = UNIPROT_SP_ISOFORMS_LINK
+        self._uniprot_sp_link = UNIPROT_SP_LINK
+        self._ncbi_link = NCBI_LINK
+        self._last_modified_date = LAST_MODIFIED_DATE
 
     async def prepare_environment(self) -> None:
         file_size_in_bytes = await self._get_file_size_in_bytes()
@@ -125,8 +130,7 @@ class SystemPreparer:
         )
         return result_file_size_in_bytes
 
-    @staticmethod
-    async def _count_general_file_size() -> int:
+    async def _count_general_file_size(self) -> int:
         head_request_timeout = ClientTimeout(total=60)
         general_file_size = 0
 
@@ -134,10 +138,10 @@ class SystemPreparer:
             raise_for_status=True, timeout=head_request_timeout
         ) as session:
             coroutines = [
-                get_file_size(UNIPROT_TR_LINK, session),
-                get_file_size(UNIPROT_SP_LINK, session),
-                get_file_size(NCBI_LINK, session),
-                get_file_size(UNIPROT_SP_ISOFORMS_LINK, session),
+                get_file_size(self._uniprot_tr_link, session),
+                get_file_size(self._uniprot_sp_link, session),
+                get_file_size(self._ncbi_link, session),
+                get_file_size(self._uniprot_sp_isoforms_link, session),
             ]
 
             tasks = create_tasks(coroutines)
@@ -202,6 +206,6 @@ class SystemPreparer:
         )
 
         logger.info("...creating file last_modified.txt if does not exist")
-        LAST_MODIFIED_DATE.touch(exist_ok=True)
+        self._last_modified_date.touch(exist_ok=True)
 
         logger.info("Done")
