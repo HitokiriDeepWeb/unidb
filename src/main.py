@@ -227,4 +227,5 @@ def _get_database_file_copier(
     return db_copier
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
