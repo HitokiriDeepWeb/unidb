@@ -22,7 +22,7 @@ from core.config import (
 from core.utils import create_tasks, process_tasks
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
 from infrastructure.preparation.common_types import Link
-from infrastructure.preparation.prepare_files.download.download_components import (
+from infrastructure.preparation.prepare_files.download.downloader_components import (
     FullFileDownloader,
     PartOfFileDownloader,
 )

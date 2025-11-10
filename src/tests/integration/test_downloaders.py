@@ -11,7 +11,7 @@ from infrastructure.preparation.prepare_files.download import (
     FullFileDownloader,
     PartOfFileDownloader,
 )
-from infrastructure.preparation.prepare_files.download.download_components import (
+from infrastructure.preparation.prepare_files.download.downloader_components import (
     _FileDownloader,
 )
 

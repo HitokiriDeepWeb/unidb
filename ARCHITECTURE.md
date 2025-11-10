@@ -66,7 +66,7 @@ unidb/
 │   │   │   ├── __init__.py
 │   │   │   ├── prepare_files
 │   │   │   │   ├── download
-│   │   │   │   │   ├── download_components.py
+│   │   │   │   │   ├── downloader_components.py
 │   │   │   │   │   ├── downloader.py
 │   │   │   │   │   ├── file_chunker.py
 │   │   │   │   │   ├── get_file_size.py
