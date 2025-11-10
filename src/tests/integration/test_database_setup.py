@@ -11,7 +11,7 @@ from docker.models.containers import Container
 
 from application.services import (
     DatabaseFileCopier,
-    SetupUniprotDatabase,
+    UniprotDatabaseSetup,
     UniprotOperator,
 )
 from infrastructure.database.postgresql import (
@@ -323,7 +323,7 @@ def _wait_for_container_healthcheck(container: Container) -> None:
 
 async def _compose_dependencies(
     path_to_files: Path,
-) -> tuple[SetupUniprotDatabase, int, ConnectionConfig]:
+) -> tuple[UniprotDatabaseSetup, int, ConnectionConfig]:
     trgm_required = True
     uniprot_lifecycle = PostgreSQLUniprotLifecycle(trgm_required=trgm_required)
     postgresql_copy_adapter = PostgreSQLAdapter()
@@ -357,7 +357,7 @@ async def _compose_dependencies(
         download_is_required=False, trgm_required=True, accept_setup_automatically=True
     )
     system_preparer = SystemPreparer(system_preparer_config)
-    uniprot_setup = SetupUniprotDatabase(
+    uniprot_setup = UniprotDatabaseSetup(
         uniprot_operator=uniprot_operator,
         file_preparer=file_preparer,
         db_copier=db_copier,

@@ -28,7 +28,7 @@ logger = setup_logging(
 # ruff: noqa: E402
 from application.services import (
     DatabaseFileCopier,
-    SetupUniprotDatabase,
+    UniprotDatabaseSetup,
     UniprotOperator,
 )
 from application.services.exceptions import NoUpdateRequired
@@ -162,7 +162,7 @@ async def _compose_dependencies():
         source_folder=source_folder, preparation_is_required=preparation_is_required
     )
 
-    uniprot_setup = SetupUniprotDatabase(
+    uniprot_setup = UniprotDatabaseSetup(
         uniprot_operator=uniprot_operator,
         update_checker=update_checker,
         db_pool_config=asdict(connection_pool_config),
