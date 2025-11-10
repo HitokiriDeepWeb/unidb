@@ -1,7 +1,8 @@
 ## Project Structure
 
 ```plaintext
-unidb
+unidb/
+├── ARCHITECTURE.md
 ├── LICENSE
 ├── Makefile
 ├── pyproject.toml
@@ -18,6 +19,7 @@ unidb
 │   │       ├── setup_uniprot_database.py
 │   │       └── uniprot_operator.py
 │   ├── core
+│   │   ├── config.py
 │   │   ├── exceptions.py
 │   │   ├── __init__.py
 │   │   ├── interfaces.py
@@ -53,8 +55,7 @@ unidb
 │   │   │   └── postgresql
 │   │   │       ├── adapter.py
 │   │   │       ├── config.py
-│   │   │       ├── database_lifecycle.py
-│   │   │       ├── get_available_connections_amount.py
+│   │   │       ├── uniprot_lifecycle.py
 │   │   │       ├── __init__.py
 │   │   │       ├── queries.py
 │   │   │       └── setup_config.py
@@ -62,19 +63,17 @@ unidb
 │   │   ├── models.py
 │   │   ├── preparation
 │   │   │   ├── common_types.py
-│   │   │   ├── constants.py
 │   │   │   ├── __init__.py
 │   │   │   ├── prepare_files
 │   │   │   │   ├── download
-│   │   │   │   │   ├── config.py
-│   │   │   │   │   ├── downloader.py
 │   │   │   │   │   ├── download_components.py
+│   │   │   │   │   ├── downloader.py
 │   │   │   │   │   ├── file_chunker.py
 │   │   │   │   │   ├── get_file_size.py
 │   │   │   │   │   └── __init__.py
 │   │   │   │   ├── exceptions.py
-│   │   │   │   ├── __init__.py
 │   │   │   │   ├── file_operations.py
+│   │   │   │   ├── __init__.py
 │   │   │   │   ├── preparer.py
 │   │   │   │   └── update_checker.py
 │   │   │   └── prepare_system
@@ -84,10 +83,9 @@ unidb
 │   │   │       ├── models.py
 │   │   │       └── preparer.py
 │   │   ├── process_data
-│   │   │   ├── calculate_workers_to_split_trembl_file.py
-│   │   │   ├── create_trembl_iterator_partial.py
 │   │   │   ├── exceptions.py
 │   │   │   ├── __init__.py
+│   │   │   ├── iterator_table_mapping.py
 │   │   │   ├── ncbi
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── iterators
@@ -98,7 +96,6 @@ unidb
 │   │   │   │   ├── parsers.py
 │   │   │   │   ├── presenters.py
 │   │   │   │   └── utils.py
-│   │   │   ├── stick_iterators_to_tables.py
 │   │   │   └── uniprot
 │   │   │       ├── fasta
 │   │   │       │   ├── chunk_range_iterator.py
