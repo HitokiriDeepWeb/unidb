@@ -2,7 +2,7 @@
 
 ```plaintext
 unidb/
-├── ARCHITECTURE.md
+├── architecture.md
 ├── LICENSE
 ├── Makefile
 ├── pyproject.toml
