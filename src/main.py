@@ -64,6 +64,7 @@ from infrastructure.process_data.uniprot.fasta import ChunkRangeIterator
 
 path_to_source_files: Path | None = app_args.path_to_source_files
 path_to_source_archives: Path | None = app_args.path_to_source_archives
+no_clean_up: bool = app_args.no_clean_up_on_failure
 
 files_were_downloaded: bool = False
 archives_were_downloaded: bool = False
@@ -114,8 +115,9 @@ async def setup_uniprot_database() -> None:
         return
 
     except Exception:
-        await uniprot_setup.remove_on_failure(files_were_downloaded)
-        logger.info("Removing database and downloaded files")
+        if not no_clean_up:
+            await uniprot_setup.remove_on_failure(files_were_downloaded)
+            logger.info("Removing database and downloaded files")
         raise
 
 

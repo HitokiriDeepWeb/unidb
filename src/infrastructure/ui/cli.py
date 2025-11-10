@@ -64,6 +64,12 @@ parser.add_argument(
     help="How detailed will logging be",
 )
 parser.add_argument(
+    "--no-clean-up-on-failure",
+    "-g",
+    action="store_true",
+    help="Prevent source files and database clean up on failure",
+)
+parser.add_argument(
     "--logtype",
     "-t",
     default=LogType.CONSOLE,
