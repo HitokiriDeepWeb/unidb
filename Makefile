@@ -1,9 +1,9 @@
 # Run all tests.
-run_tests:
+test:
 	pytest
 
-run_unit_tests:
+unit:
 	pytest src/tests/unit
 
-run_integration_tests:
+integration:
 	pytest src/tests/integration
