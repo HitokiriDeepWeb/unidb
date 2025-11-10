@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from asyncio import Semaphore
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -8,9 +9,9 @@ import aiohttp
 from aiohttp import ClientResponse, ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from core.config import CHUNK_SIZE
 from domain.models import ChunkRange
 from infrastructure.preparation.common_types import Link
-from infrastructure.preparation.prepare_files.download.config import DownloadConfig
 from infrastructure.preparation.prepare_files.download.file_chunker import (
     FileChunkCalculator,
 )
@@ -23,11 +24,12 @@ class _FileDownloader:
         self,
         session: ClientSession,
         url: Link,
-        config: DownloadConfig,
+        semaphore: Semaphore,
     ):
         self._session = session
         self._url = url
-        self._config = config
+        self._semaphore = semaphore
+        self._chunk_size = CHUNK_SIZE
 
     def extract_file_name_from_url(self) -> str:
         return Path(urlparse(self._url).path).name
@@ -68,7 +70,7 @@ class _FileDownloader:
     ) -> None:
         """Download file and write its content to file."""
         async with (
-            self._config.SEMAPHORE,
+            self._semaphore,
             self._session.get(self._url, headers=headers, timeout=timeout) as resp,
         ):
             await self._write_chunks_to_file(resp, path_to_file)
@@ -78,7 +80,7 @@ class _FileDownloader:
     ) -> None:
         """Write downloaded content to file piece by piece."""
         async with aiofiles.open(path_to_file, mode="wb") as output_file:
-            async for chunk in response.content.iter_chunked(self._config.CHUNK_SIZE):
+            async for chunk in response.content.iter_chunked(self._chunk_size):
                 await output_file.write(chunk)
 
 
@@ -90,11 +92,11 @@ class FullFileDownloader:
         session: ClientSession,
         url: Link,
         path_to_save: Path,
-        config: DownloadConfig,
+        semaphore: Semaphore,
     ):
         self._url = url
         self._path_to_save = path_to_save
-        self._file_downloader = _FileDownloader(session, url, config)
+        self._file_downloader = _FileDownloader(session, url, semaphore)
 
     async def download_file(self, timeout: ClientTimeout) -> None:
         file_name = self._file_downloader.extract_file_name_from_url()
@@ -127,11 +129,11 @@ class PartOfFileDownloader:
         url: Link,
         file_part_number: int,
         path_to_save: Path,
-        config: DownloadConfig,
+        semaphore: Semaphore,
         file_chunker: FileChunkCalculator,
     ):
         self._path_to_save = path_to_save
-        self._file_downloader = _FileDownloader(session, url, config)
+        self._file_downloader = _FileDownloader(session, url, semaphore)
         self._file_part_number = file_part_number
         self._file_chunker = file_chunker
 
