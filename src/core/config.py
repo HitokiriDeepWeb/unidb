@@ -6,8 +6,8 @@ from pathlib import Path
 import aiohttp
 from aiohttp import ClientTimeout
 
+from core.common_types import Link
 from domain.entities import BASE_DIR
-from infrastructure.preparation.common_types import Link
 
 # Donwload config
 
@@ -68,9 +68,8 @@ NETWORK_ERRORS = (
     aiohttp.ClientConnectionError,
 )
 
+
 # File names that must be extracted / prepared.
-
-
 class NCBIFiles(StrEnum):
     RANKS = "nodes.dmp"
     NAMES = "names.dmp"

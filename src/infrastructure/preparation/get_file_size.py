@@ -4,8 +4,8 @@ import logging
 from aiohttp import ClientResponse, ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from core.common_types import Link
 from core.config import NETWORK_ERRORS
-from infrastructure.preparation.common_types import Link
 
 logger = logging.getLogger(__name__)
 

@@ -2,8 +2,8 @@ import pytest
 from aiohttp import ClientSession
 from aioresponses import aioresponses
 
+from core.common_types import Link
 from infrastructure.preparation import get_file_size
-from infrastructure.preparation.common_types import Link
 
 
 @pytest.mark.asyncio

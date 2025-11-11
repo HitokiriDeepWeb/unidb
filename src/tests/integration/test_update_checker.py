@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from aioresponses import aioresponses
 
-from infrastructure.preparation.common_types import Link
+from core.common_types import Link
 from infrastructure.preparation.prepare_files.update_checker import UpdateChecker
 
 

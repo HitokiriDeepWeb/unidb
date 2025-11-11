@@ -8,9 +8,9 @@ import aiofiles
 from aiohttp import ClientResponse, ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from core.common_types import Link
 from core.config import CHUNK_SIZE, NETWORK_ERRORS
 from domain.models import ChunkRange
-from infrastructure.preparation.common_types import Link
 
 logger = logging.getLogger(__name__)
 
