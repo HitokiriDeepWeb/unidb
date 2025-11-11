@@ -14,6 +14,7 @@ from application.services import (
     UniprotDatabaseSetup,
     UniprotOperator,
 )
+from core.config import NCBIFiles, UniprotFiles
 from infrastructure.database.postgresql import (
     ConnectionConfig,
     ConnectionPoolConfig,
@@ -23,7 +24,6 @@ from infrastructure.database.postgresql import (
     setup_connection_pool_config,
     setup_queue_config,
 )
-from infrastructure.models import NCBIFiles, UniprotFiles
 from infrastructure.preparation.prepare_files import (
     FilePreparer,
     UpdateChecker,

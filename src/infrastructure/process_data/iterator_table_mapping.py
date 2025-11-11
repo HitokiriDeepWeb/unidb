@@ -2,8 +2,8 @@ from functools import partial
 from pathlib import Path
 
 from application.models import IteratorToTable
+from core.config import NCBIFiles, UniprotFiles
 from domain.entities import Tables
-from infrastructure.models import NCBIFiles, UniprotFiles
 from infrastructure.process_data.ncbi import (
     NCBIIterator,
     PresenterType,

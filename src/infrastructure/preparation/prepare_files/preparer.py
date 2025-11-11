@@ -5,10 +5,10 @@ from itertools import chain
 from pathlib import Path
 from threading import Event
 
+from core.config import NCBIFiles, UniprotFiles
 from core.models import FunctionCall
 from core.utils import process_futures, run_futures
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
-from infrastructure.models import NCBIFiles, UniprotFiles
 from infrastructure.preparation.prepare_files.exceptions import FilePreparationError
 from infrastructure.preparation.prepare_files.file_operations import (
     concatenate_files,

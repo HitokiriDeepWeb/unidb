@@ -32,6 +32,7 @@ from application.services import (
     UniprotOperator,
 )
 from application.services.exceptions import NoUpdateRequired
+from core.config import UniprotFiles
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
 from infrastructure.database.postgresql import (
     ConnectionConfig,
@@ -43,7 +44,6 @@ from infrastructure.database.postgresql import (
     setup_connection_pool_config,
     setup_queue_config,
 )
-from infrastructure.models import UniprotFiles
 from infrastructure.preparation.prepare_files import (
     FilePreparer,
     UpdateChecker,

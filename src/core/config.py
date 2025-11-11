@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import Semaphore
+from enum import StrEnum
 from pathlib import Path
 
 import aiohttp
@@ -66,3 +67,19 @@ NETWORK_ERRORS = (
     ConnectionAbortedError,
     aiohttp.ClientConnectionError,
 )
+
+# File names that must be extracted / prepared.
+
+
+class NCBIFiles(StrEnum):
+    RANKS = "nodes.dmp"
+    NAMES = "names.dmp"
+    LINEAGE = "taxidlineage.dmp"
+    MERGED = "merged.dmp"
+    DELNODES = "delnodes.dmp"
+
+
+class UniprotFiles(StrEnum):
+    SWISS_PROT = "uniprot_sprot.fasta"
+    SP_ISOFORMS = "uniprot_sprot_varsplic.fasta"
+    TREMBL = "uniprot_trembl.fasta"
