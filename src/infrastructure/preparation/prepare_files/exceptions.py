@@ -1,6 +1,2 @@
-class FilePreparationException(Exception):
-    """File preparation level exception."""
-
-
-class FilePreparationError(FilePreparationException):
+class FilePreparationError(Exception):
     """File preparation exception."""

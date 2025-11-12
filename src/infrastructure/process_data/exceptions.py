@@ -1,10 +1,10 @@
-class DataProcessingException(Exception):
+class DataProcessingError(Exception):
     """Data processing level exception."""
 
 
-class InvalidRecordError(DataProcessingException):
+class InvalidRecordError(DataProcessingError):
     """Invalid record structure exception."""
 
 
-class IteratorError(DataProcessingException):
+class IteratorError(DataProcessingError):
     """File iteration exception."""

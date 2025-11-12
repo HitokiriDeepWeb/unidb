@@ -1,10 +1,10 @@
-class ApplicationException(Exception):
+class ApplicationError(Exception):
     """Application level exceptions."""
 
 
-class UniprotSetupError(ApplicationException):
+class UniprotSetupError(ApplicationError):
     """Uniprot database Setup Error"""
 
 
-class NoUpdateRequired(ApplicationException):
+class NoUpdateRequired(ApplicationError):  # noqa: N818
     """Raise when update is not required to finish the program"""
