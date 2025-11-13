@@ -56,5 +56,20 @@ indent-style = "space"
 [tool.ruff.lint.pydocstyle]
 convention="pep257"
 
+[tool.coverage.run]
+branch = true
+
+omit = [
+    "tests/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "@abstractmethod",
+    "def .*\\(.*\\):\n        pass",
+]
+
 [tool.uv.sources]
 pytest-watcher = { git = "https://github.com/HitokiriDeepWeb/pytest-watcher.git" }
