@@ -28,13 +28,13 @@ class AsyncQueueManager:
         self._first_exception: Exception | None = None
 
     async def enqueue_task(self, coro: Coroutine) -> None:
-        if self._workers:
-            task = asyncio.create_task(coro)
+        assert self._workers
 
-            await asyncio.wait_for(
-                self._record_queue.put(task),
-                timeout=self._config.task_timeout,
-            )
+        task = asyncio.create_task(coro)
+        await asyncio.wait_for(
+            self._record_queue.put(task),
+            timeout=self._config.task_timeout,
+        )
 
     async def __aenter__(self) -> Self:
         self._workers = self._create_worker_tasks()
