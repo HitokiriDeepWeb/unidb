@@ -111,14 +111,18 @@ async def setup_uniprot_database() -> None:
         logger.info("UniProt database has been set up successfully.")
 
     except NoUpdateRequired:
-        logger.info("UniProt database is up to date")
         return
 
     except Exception:
-        if not no_clean_up:
-            await uniprot_setup.remove_on_failure(files_were_downloaded)
-            logger.info("Removing database and downloaded files")
-        raise
+        logger.error("Could not set up UniProt database")
+        await _clean_up(uniprot_setup)
+        return
+
+
+async def _clean_up(uniprot_setup: UniprotDatabaseSetup) -> None:
+    if not no_clean_up:
+        await uniprot_setup.remove_on_failure(files_were_downloaded)
+        logger.info("Removing database and downloaded files")
 
 
 async def _compose_dependencies():
@@ -230,4 +234,8 @@ def _get_database_file_copier(
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+
+    except KeyboardInterrupt:
+        logger.info("User terminated program manually")
