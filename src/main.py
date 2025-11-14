@@ -113,7 +113,7 @@ async def setup_uniprot_database() -> None:
     except NoUpdateRequired:
         return
 
-    except Exception as e:
+    except Exception:
         logger.exception("Could not set up UniProt database")
         await _clean_up(uniprot_setup)
         raise SystemExit(1) from None
