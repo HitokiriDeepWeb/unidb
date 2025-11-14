@@ -111,7 +111,7 @@ async def setup_uniprot_database() -> None:
         logger.info("UniProt database has been set up successfully.")
 
     except NoUpdateRequired:
-        return
+        raise SystemExit from None
 
     except Exception:
         logger.exception("Could not set up UniProt database")
@@ -121,8 +121,13 @@ async def setup_uniprot_database() -> None:
 
 async def _clean_up(uniprot_setup: UniprotDatabaseSetup) -> None:
     if not no_clean_up:
-        await uniprot_setup.remove_on_failure(files_were_downloaded)
-        logger.info("Removing database and downloaded files")
+        try:
+            logger.info("Removing database and downloaded files")
+            await uniprot_setup.remove_on_failure(files_were_downloaded)
+
+        except Exception:
+            logger.error("Unable to clean up database and source files")
+            raise SystemExit(1) from None
 
 
 async def _compose_dependencies():
