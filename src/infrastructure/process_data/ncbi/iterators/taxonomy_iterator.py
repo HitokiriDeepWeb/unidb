@@ -27,17 +27,13 @@ class TaxonomyIterator:
 
     @contextmanager
     def _open_file(self, path_to_file: Path):
-        file = path_to_file.open("r", encoding="utf-8")
-
         try:
-            yield file
+            with path_to_file.open("r", encoding="utf-8") as file:
+                yield file
 
         except Exception as e:
             logger.exception("Failed to open file %s", path_to_file)
             raise IteratorError(f"Failed to open file {path_to_file}") from e
-
-        finally:
-            file.close()
 
     def __iter__(self) -> Iterator[Taxonomy]:
         """Take 'ranks' from file 'nodes.dmp' and add them to file 'names.dmp'."""
