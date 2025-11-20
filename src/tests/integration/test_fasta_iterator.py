@@ -121,3 +121,11 @@ def test_fasta_iterator_with_empty_file(empty_fasta: Path):
 
     with pytest.raises(IteratorError):
         list(sut)
+
+
+def test_fasta_iterator_fail_to_open_file(tmp_path: Path):
+    path_to_file = tmp_path / "no_file.fasta"
+    sut = FastaIterator(path_to_file)
+
+    with pytest.raises(IteratorError):
+        list(sut)
