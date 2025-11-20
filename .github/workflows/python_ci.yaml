@@ -51,3 +51,7 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest -v
+      - name: Check complexity with xenon and radon
+        run: |
+          source .venv/bin/activate
+          xenon --max-absolute B --max-average-num 2 .
