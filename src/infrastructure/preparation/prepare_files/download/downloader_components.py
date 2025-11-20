@@ -11,6 +11,7 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 from core.common_types import Link
 from core.config import CHUNK_SIZE, NETWORK_ERRORS
 from domain.models import ChunkRange
+from infrastructure.preparation.prepare_files.exceptions import DownloadError
 
 logger = logging.getLogger(__name__)
 
@@ -67,16 +68,16 @@ class FullFileDownloader:
         try:
             await self._file_downloader.execute_http_download(path_to_file, timeout)
 
-        except asyncio.TimeoutError:
+        except asyncio.TimeoutError as e:
             logger.exception(
                 "Unable to download %s, connection timed out",
                 file_name,
             )
-            raise
+            raise DownloadError from e
 
-        except Exception:
+        except Exception as e:
             logger.exception("Unable to download %s", file_name)
-            raise
+            raise DownloadError from e
 
 
 class PartOfFileDownloader:
@@ -112,9 +113,9 @@ class PartOfFileDownloader:
             part_file_path, headers = self._try_setup_download_settings(file_name)
             return part_file_path, headers
 
-        except Exception:
+        except Exception as e:
             logger.exception("Unable to set up arguments for download %s", file_name)
-            raise
+            raise DownloadError from e
 
     def _try_setup_download_settings(
         self, file_name: str
@@ -179,13 +180,13 @@ class _FileDownloader:
         try:
             await self._try_execute_http_download(path_to_file, timeout, headers)
 
-        except asyncio.TimeoutError:
+        except asyncio.TimeoutError as e:
             logger.exception("Unable to download %s, check your connection", file_name)
-            raise
+            raise DownloadError from e
 
-        except Exception:
+        except Exception as e:
             logger.exception("Unable to download %s", file_name)
-            raise
+            raise DownloadError from e
 
     @retry(
         stop=stop_after_attempt(3),
