@@ -23,9 +23,8 @@ class NCBIIterator:
                 yield file
 
         except Exception as e:
-            error_message = f"Failed to open file {path_to_file}"
-            logger.exception(error_message, e)
-            raise IteratorError(error_message) from e
+            logger.exception("Failed to open file %s", path_to_file)
+            raise IteratorError(f"Failed to open file {path_to_file}") from e
 
     def __iter__(self) -> Iterator[MergedPair | LineagePair | Taxonomy]:
         with self._open_file(self._path_to_file) as file:
