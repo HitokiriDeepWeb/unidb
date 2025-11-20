@@ -26,7 +26,7 @@ class TaxonomyIterator:
         self._ranks_parser = RanksParser()
 
     @contextmanager
-    def _open_file(self, path_to_file: Path):
+    def _open_file(self, path_to_file: Path) -> Iterator[IO]:
         try:
             with path_to_file.open("r", encoding="utf-8") as file:
                 yield file

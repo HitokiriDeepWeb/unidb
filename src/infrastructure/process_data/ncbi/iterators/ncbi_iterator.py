@@ -2,6 +2,7 @@ import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import IO
 
 from domain.entities import LineagePair, MergedPair, Taxonomy
 from infrastructure.process_data.exceptions import IteratorError
@@ -17,7 +18,7 @@ class NCBIIterator:
         self._presenter = presenter
 
     @contextmanager
-    def _open_file(self, path_to_file: Path):
+    def _open_file(self, path_to_file: Path) -> Iterator[IO]:
         try:
             with path_to_file.open("r", encoding="utf-8") as file:
                 yield file
