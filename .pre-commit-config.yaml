@@ -17,4 +17,4 @@ repos:
     rev: v0.9.3
     hooks:
       - id: xenon
-        args: [--max-absolute=B, --max-average-num=2]
+        args: [--max-absolute=B, --max-average=A]
