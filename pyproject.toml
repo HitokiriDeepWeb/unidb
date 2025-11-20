@@ -62,7 +62,7 @@ convention="pep257"
 branch = true
 
 omit = [
-    "tests/*",
+    "*/tests/*",
     "*/__init__.py",
 ]
 
