@@ -26,6 +26,7 @@ dev = [
     "docker>=7.1.0",
     "pytest-watcher",
     "radon>=6.0.1",
+    "xenon>=0.9.3",
 ]
 
 [tool.pytest.ini_options]
