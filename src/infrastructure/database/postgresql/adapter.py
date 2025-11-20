@@ -13,7 +13,7 @@ from core.utils import create_tasks, process_tasks
 from domain.entities import Tables
 from infrastructure.database.common_types import QueryNested
 from infrastructure.database.exceptions import (
-    ConnectionDatabaseError,
+    DatabaseConnectionError,
     QueryExecutionError,
 )
 
@@ -31,7 +31,7 @@ class PostgreSQLAdapter:
 
         except Exception as e:
             logger.exception("Failed to initialize pool")
-            raise ConnectionDatabaseError from e
+            raise DatabaseConnectionError from e
 
     async def execute_queries_async(self, pool: Pool, queries: QueryNested) -> None:
         """Execute queries concurrently. Order has no importance."""
