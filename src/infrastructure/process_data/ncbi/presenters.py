@@ -1,5 +1,5 @@
 from collections.abc import Iterator
-from typing import TextIO
+from typing import IO
 
 from domain.entities import LineagePair, MergedPair, Taxonomy
 from infrastructure.process_data.ncbi.models import LineageTaxonomyIDs
@@ -21,7 +21,7 @@ class DelnodesPresenter:
     def __init__(self):
         self._parser = DelnodesParser()
 
-    def present(self, source: TextIO) -> Iterator[Taxonomy]:
+    def present(self, source: IO) -> Iterator[Taxonomy]:
         for line in source:
             deleted_ncbi_id: int = self._parser.parse(line)
             yield Taxonomy("no rank", deleted_ncbi_id, f"deleted[{deleted_ncbi_id}]")
@@ -44,7 +44,7 @@ class LineagePresenter:
     def __init__(self):
         self._parser = LineageParser()
 
-    def present(self, source: TextIO) -> Iterator[LineagePair]:
+    def present(self, source: IO) -> Iterator[LineagePair]:
         for line in source:
             taxids = self._parser.parse(line)
             yield from self._cartesian_pairs_gen(taxids)
@@ -63,7 +63,7 @@ class MergedPresenter:
     def __init__(self):
         self._parser = MergedParser()
 
-    def present(self, source: TextIO) -> Iterator[MergedPair]:
+    def present(self, source: IO) -> Iterator[MergedPair]:
         for line in source:
             yield self._parser.parse(line)
 
