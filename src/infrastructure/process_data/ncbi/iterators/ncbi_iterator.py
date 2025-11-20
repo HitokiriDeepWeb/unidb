@@ -18,17 +18,14 @@ class NCBIIterator:
 
     @contextmanager
     def _open_file(self, path_to_file: Path):
-        file = path_to_file.open("r", encoding="utf-8")
         try:
-            yield file
+            with path_to_file.open("r", encoding="utf-8") as file:
+                yield file
 
         except Exception as e:
             error_message = f"Failed to open file {path_to_file}"
             logger.exception(error_message, e)
             raise IteratorError(error_message) from e
-
-        finally:
-            file.close()
 
     def __iter__(self) -> Iterator[MergedPair | LineagePair | Taxonomy]:
         with self._open_file(self._path_to_file) as file:
