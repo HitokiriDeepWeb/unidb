@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from domain.entities import Taxonomy
+from infrastructure.process_data.exceptions import IteratorError
 from infrastructure.process_data.ncbi import TaxonomyIterator
 
 
@@ -70,3 +71,12 @@ def test_taxonomy_iterator_with_valid_content(
     result = list(sut)
 
     assert result == expected_result
+
+
+def test_taxonomy_iterator_fail_to_open_files(tmp_path: Path):
+    path_to_ranks = tmp_path / "no_file.1.dmp"
+    path_to_names = tmp_path / "no_file.2.dmp"
+    sut = TaxonomyIterator(path_to_ranks=path_to_ranks, path_to_names=path_to_names)
+
+    with pytest.raises(IteratorError):
+        list(sut)
