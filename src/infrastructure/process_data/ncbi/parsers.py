@@ -40,7 +40,8 @@ class LineageParser:
         except Exception as e:
             raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
 
-        return [int(parent_taxid) for parent_taxid in parent_taxids_str]
+        else:
+            return [int(parent_taxid) for parent_taxid in parent_taxids_str]
 
     def _extract_main_taxid(self, record: str, record_parts: list[str]) -> int:
         """Extract main taxon ID."""
@@ -205,9 +206,10 @@ class NamesParser:
         except Exception as e:
             raise InvalidRecordError(f"{self._LOG_MESSAGE}: {new_record}") from e
 
-        return NameData(
-            ncbi_id=int(ncbi_id), tax_name=tax_name, specification=specification
-        )
+        else:
+            return NameData(
+                ncbi_id=int(ncbi_id), tax_name=tax_name, specification=specification
+            )
 
     def _split_record(self, new_record: str) -> list[str]:
         delimiter = "\t|\t"

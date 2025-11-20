@@ -27,16 +27,17 @@ class FastaParser:
                 f"{raw_sequence_info} sequence parts: {sequence_parts}"
             ) from e
 
-        return SequenceRecord(
-            accession=meta_info.accession,
-            is_reviewed=meta_info.is_reviewed,
-            source=meta_info.source,
-            entry_name=biological_info.entry_name,
-            peptide_name=biological_info.peptide_name,
-            organism_name=biological_info.organism_name,
-            ncbi_id=biological_info.ncbi_id,
-            sequence=sequence,
-        )
+        else:
+            return SequenceRecord(
+                accession=meta_info.accession,
+                is_reviewed=meta_info.is_reviewed,
+                source=meta_info.source,
+                entry_name=biological_info.entry_name,
+                peptide_name=biological_info.peptide_name,
+                organism_name=biological_info.organism_name,
+                ncbi_id=biological_info.ncbi_id,
+                sequence=sequence,
+            )
 
     @staticmethod
     def _get_sequence(sequence_parts: list[str]) -> str:

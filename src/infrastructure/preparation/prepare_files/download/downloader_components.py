@@ -116,7 +116,8 @@ class PartOfFileDownloader:
             logger.exception("Unable to set up arguments for download %s", file_name)
             raise DownloadError from e
 
-        return part_file_path, headers
+        else:
+            return part_file_path, headers
 
     def _try_setup_download_settings(
         self, file_name: str

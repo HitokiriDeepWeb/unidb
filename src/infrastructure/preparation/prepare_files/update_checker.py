@@ -1,3 +1,4 @@
+import contextlib
 import logging
 from pathlib import Path
 
@@ -94,8 +95,5 @@ class UpdateChecker:
         return True
 
     def _get_previous_modification_date(self) -> str | None:
-        try:
+        with contextlib.suppress(FileNotFoundError):
             return self._path_to_modification_date.open("r").readline()
-
-        except FileNotFoundError:
-            pass
