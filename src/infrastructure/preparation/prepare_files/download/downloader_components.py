@@ -111,11 +111,12 @@ class PartOfFileDownloader:
     def _setup_download_settings(self, file_name: str) -> tuple[Path, dict[str, str]]:
         try:
             part_file_path, headers = self._try_setup_download_settings(file_name)
-            return part_file_path, headers
 
         except Exception as e:
             logger.exception("Unable to set up arguments for download %s", file_name)
             raise DownloadError from e
+
+        return part_file_path, headers
 
     def _try_setup_download_settings(
         self, file_name: str
