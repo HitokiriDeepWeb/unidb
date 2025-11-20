@@ -55,9 +55,10 @@ class TaxonomyIterator:
                 yield from self._taxonomy_gen(name, rank)
 
             except Exception as e:
-                error_message = f"Failed to build dataclass from {name, rank}"
-                logger.exception(error_message)
-                raise IteratorError(error_message) from e
+                logger.exception("Failed to build dataclass from %s, %s", name, rank)
+                raise IteratorError(
+                    f"Failed to build dataclass from {name, rank}"
+                ) from e
 
     def _extract_rank(self, ranks: IO):
         return self._ranks_parser.parse(next(ranks))
