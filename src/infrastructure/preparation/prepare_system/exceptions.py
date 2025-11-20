@@ -1,6 +1,6 @@
-class SystemPreparationException(Exception):
+class SystemPreparationError(Exception):
     """System preparation level exception."""
 
 
-class NotEnoughSpaceError(SystemPreparationException):
+class NotEnoughSpaceError(SystemPreparationError):
     """Not enough disk space exception."""

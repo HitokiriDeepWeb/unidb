@@ -25,8 +25,7 @@ class LineageParser:
         delimiter = "\t|\t"
 
         try:
-            record_parts = record.strip().split(delimiter)
-            return record_parts
+            return record.strip().split(delimiter)
 
         except Exception as e:
             raise InvalidRecordError(f"Invalid record provided: {record}") from e
@@ -37,10 +36,11 @@ class LineageParser:
 
         try:
             parent_taxids_str = record_parts[1].replace(delimiter, "").split()
-            return [int(parent_taxid) for parent_taxid in parent_taxids_str]
 
         except Exception as e:
             raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+
+        return [int(parent_taxid) for parent_taxid in parent_taxids_str]
 
     def _extract_main_taxid(self, record: str, record_parts: list[str]) -> int:
         """Extract main taxon ID."""
@@ -79,8 +79,7 @@ class MergedParser:
         delimiter = "\t|\t"
 
         try:
-            record_parts = record.strip().split(delimiter)
-            return record_parts
+            return record.strip().split(delimiter)
 
         except Exception as e:
             raise InvalidRecordError(f"Invalid record provided: {record}") from e
@@ -161,8 +160,7 @@ class RanksParser:
         delimiter = "\t|\t"
 
         try:
-            record_parts = record.strip().split(delimiter)
-            return record_parts
+            return record.strip().split(delimiter)
 
         except Exception as e:
             raise InvalidRecordError(f"Invalid record provided: {record}") from e
@@ -203,12 +201,13 @@ class NamesParser:
 
         try:
             ncbi_id, tax_name, specification, *_ = self._split_record(new_record)
-            return NameData(
-                ncbi_id=int(ncbi_id), tax_name=tax_name, specification=specification
-            )
 
         except Exception as e:
             raise InvalidRecordError(f"{self._LOG_MESSAGE}: {new_record}") from e
+
+        return NameData(
+            ncbi_id=int(ncbi_id), tax_name=tax_name, specification=specification
+        )
 
     def _split_record(self, new_record: str) -> list[str]:
         delimiter = "\t|\t"

@@ -260,11 +260,13 @@ Required archives in case you use `--path-to-source-archives`, `-z` option:
 
 - **Python** 3.12+
 - **PostgreSQL** 9+
-- **\*nix system** (Linux, macOS)
+- **\*nix system** (Linux, MacOS*)
 - `cat` utility
 - **Internet connection** (unless using pre-downloaded files)
 - **RAM** 4 GB
 - **Disk space** 150 GB (minimum)
+
+*_Should work as well but not tested._
 
 To create database without trigram index and download all the files you will need approximately 205 GB free space.
 The database itself after setup will weigh approximately 108 GB.

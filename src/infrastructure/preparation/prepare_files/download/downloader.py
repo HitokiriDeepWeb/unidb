@@ -7,6 +7,7 @@ from typing import TypedDict
 
 from aiohttp import ClientSession
 
+from core.common_types import Link
 from core.config import (
     GRACEFUL_SHUTDOWN_DELAY,
     HEAD_REQUEST_TIMEOUT,
@@ -21,7 +22,6 @@ from core.config import (
 )
 from core.utils import create_tasks, process_tasks
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
-from infrastructure.preparation.common_types import Link
 from infrastructure.preparation.get_file_size import (
     get_file_size,
 )

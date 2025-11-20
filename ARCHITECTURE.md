@@ -61,7 +61,6 @@ unidb/
 │   │   │       ├── queries.py
 │   │   │       └── setup_config.py
 │   │   ├── __init__.py
-│   │   ├── models.py
 │   │   ├── preparation
 │   │   │   ├── common_types.py
 │   │   │   ├── get_file_size.py

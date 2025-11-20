@@ -32,6 +32,7 @@ from application.services import (
     UniprotOperator,
 )
 from application.services.exceptions import NoUpdateRequired
+from core.config import UniprotFiles
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
 from infrastructure.database.postgresql import (
     ConnectionConfig,
@@ -43,7 +44,6 @@ from infrastructure.database.postgresql import (
     setup_connection_pool_config,
     setup_queue_config,
 )
-from infrastructure.models import UniprotFiles
 from infrastructure.preparation.prepare_files import (
     FilePreparer,
     UpdateChecker,
@@ -67,7 +67,6 @@ path_to_source_archives: Path | None = app_args.path_to_source_archives
 no_clean_up: bool = app_args.no_clean_up_on_failure
 
 files_were_downloaded: bool = False
-archives_were_downloaded: bool = False
 download_is_required: bool = True
 preparation_is_required: bool = True
 
@@ -79,7 +78,7 @@ if path_to_source_files is not None:
 
 elif path_to_source_archives is not None:
     source_folder = path_to_source_archives
-    archives_were_downloaded = True
+    files_were_downloaded = True
     download_is_required = False
 
 else:
@@ -111,14 +110,23 @@ async def setup_uniprot_database() -> None:
         logger.info("UniProt database has been set up successfully.")
 
     except NoUpdateRequired:
-        logger.info("UniProt database is up to date")
-        return
+        raise SystemExit from None
 
     except Exception:
-        if not no_clean_up:
-            await uniprot_setup.remove_on_failure(files_were_downloaded)
+        logger.exception("Could not set up UniProt database")
+        await _clean_up(uniprot_setup)
+        raise SystemExit(1) from None
+
+
+async def _clean_up(uniprot_setup: UniprotDatabaseSetup) -> None:
+    if not no_clean_up:
+        try:
             logger.info("Removing database and downloaded files")
-        raise
+            await uniprot_setup.remove_on_failure(files_were_downloaded)
+
+        except Exception:
+            logger.error("Unable to clean up database and source files")
+            raise SystemExit(1) from None
 
 
 async def _compose_dependencies():
@@ -230,4 +238,8 @@ def _get_database_file_copier(
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+
+    except KeyboardInterrupt:
+        logger.info("User terminated program manually")

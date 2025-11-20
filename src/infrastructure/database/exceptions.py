@@ -1,14 +1,14 @@
-class DatabaseException(Exception):
+class DatabaseError(Exception):
     """Database level exception."""
 
 
-class QueryExecutionError(DatabaseException):
+class QueryExecutionError(DatabaseError):
     """Failed to execute database query exception"""
 
 
-class ConnectionDatabaseError(DatabaseException):
+class ConnectionDatabaseError(DatabaseError):
     """Connection / pool creation exception"""
 
 
-class ResetDatabaseError(DatabaseException):
+class ResetDatabaseError(DatabaseError):
     """Database reset exception."""

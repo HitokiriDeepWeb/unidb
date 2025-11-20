@@ -4,8 +4,8 @@ import pytest
 from aiohttp import ClientSession
 from aioresponses import aioresponses
 
+from core.common_types import Link
 from core.config import SEMAPHORE, SMALL_FILE_TIMEOUT
-from infrastructure.preparation.common_types import Link
 from infrastructure.preparation.prepare_files.download import (
     FileChunkCalculator,
     FullFileDownloader,

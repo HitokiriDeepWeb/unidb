@@ -25,6 +25,7 @@ dev = [
     "pre-commit>=4.2.0",
     "docker>=7.1.0",
     "pytest-watcher",
+    "radon>=6.0.1",
 ]
 
 [tool.pytest.ini_options]
@@ -47,7 +48,7 @@ select = [
     "E",
 ]
 
-ignore = ["F841", "F401", "E501", "F821", "N818", "SIM115"]
+ignore = ["F841", "F401", "E501", "F821", "SIM115"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -55,6 +56,21 @@ indent-style = "space"
 
 [tool.ruff.lint.pydocstyle]
 convention="pep257"
+
+[tool.coverage.run]
+branch = true
+
+omit = [
+    "tests/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "@abstractmethod",
+    "def .*\\(.*\\):\n        pass",
+]
 
 [tool.uv.sources]
 pytest-watcher = { git = "https://github.com/HitokiriDeepWeb/pytest-watcher.git" }

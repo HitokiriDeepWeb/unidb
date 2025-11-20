@@ -18,8 +18,8 @@ class ChunkRangeIterator:
         chunk_boundaries = self._split_file_on_chunks()
         yield from self._ranges_from_boundaries_gen(chunk_boundaries)
 
+    @staticmethod
     def _ranges_from_boundaries_gen(
-        self,
         chunk_boundaries: list[int],
     ) -> Iterator[ChunkRange]:
         """Generate chunks from boundaries."""
@@ -71,7 +71,8 @@ class ChunkRangeIterator:
 
         return chunk_boundaries
 
-    def _get_nearest_record_position(self, file: IO) -> int | None:
+    @staticmethod
+    def _get_nearest_record_position(file: IO) -> int | None:
         """Get nearest record delimiter position from the current line."""
         for line in file:
             if line.startswith(b">"):
@@ -80,7 +81,8 @@ class ChunkRangeIterator:
 
         return None
 
-    def _move_file_position(self, file: IO, position: int) -> None:
+    @staticmethod
+    def _move_file_position(file: IO, position: int) -> None:
         """Moves file position to the nearest line after jump on chunk size (bytes)."""
         file.seek(position)
         # Get to the next line in case we jumped to the middle of the previous line.

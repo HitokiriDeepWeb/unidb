@@ -6,8 +6,8 @@ from aiohttp import ClientSession, ClientTimeout
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 from application.services.exceptions import NoUpdateRequired
+from core.common_types import Link
 from core.config import LAST_MODIFIED_DATE, NETWORK_ERRORS, UNIPROT_SP_LINK
-from infrastructure.preparation.common_types import Link
 
 logger = logging.getLogger(__name__)
 

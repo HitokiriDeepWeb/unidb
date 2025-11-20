@@ -5,10 +5,10 @@ from itertools import chain
 from pathlib import Path
 from threading import Event
 
+from core.config import NCBIFiles, UniprotFiles
 from core.models import FunctionCall
 from core.utils import process_futures, run_futures
 from domain.entities import DEFAULT_SOURCE_FILES_FOLDER
-from infrastructure.models import NCBIFiles, UniprotFiles
 from infrastructure.preparation.prepare_files.exceptions import FilePreparationError
 from infrastructure.preparation.prepare_files.file_operations import (
     concatenate_files,
@@ -17,15 +17,6 @@ from infrastructure.preparation.prepare_files.file_operations import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def process_trembl_file(path_to_trembl: Path) -> None:
-    try:
-        concatenate_files(path_to_trembl)
-        decompress_gz(path_to_trembl)
-
-    except Exception as e:
-        raise FilePreparationError(f"Unable to prepare file {path_to_trembl}") from e
 
 
 class FilePreparer:
@@ -40,6 +31,7 @@ class FilePreparer:
         self._path_to_new_taxdump = source_folder / "new_taxdump.tar.gz"
         self._path_to_sp_gz = source_folder / "uniprot_sprot.fasta.gz"
         self._path_to_sp_iso_gz = source_folder / "uniprot_sprot_varsplic.fasta.gz"
+        self._need_to_concatenate_trembl_files = True
 
     async def prepare_required_files(
         self, loop: AbstractEventLoop, process_pool: ProcessPoolExecutor, event: Event
@@ -50,16 +42,9 @@ class FilePreparer:
 
         self._check_files_that_will_be_prepared_existence()
 
-        preparation_calls = [
-            FunctionCall(
-                func=extract_from_tar, args=(self._path_to_new_taxdump, NCBIFiles)
-            ),
-            FunctionCall(func=decompress_gz, args=(self._path_to_sp_gz,)),
-            FunctionCall(func=decompress_gz, args=(self._path_to_sp_iso_gz,)),
-            FunctionCall(func=process_trembl_file, args=(self._path_to_tr_gz,)),
-        ]
-
+        preparation_calls = self._get_preparation_calls()
         tasks = run_futures(loop, process_pool, preparation_calls)
+
         await process_futures(tasks, event, FilePreparationError())
 
     def _check_files_that_will_be_prepared_existence(self) -> None:
@@ -70,12 +55,13 @@ class FilePreparer:
         ]
 
         trembl_gz_files: str = "uniprot_trembl.fasta.gz*"
-        matching_files: list[Path] = list(
-            self._source_folder.glob("uniprot_trembl.fasta.gz.*")
-        )
+        matching_files: list[Path] = list(self._source_folder.glob(trembl_gz_files))
 
         if not matching_files:
             raise FileNotFoundError(f"Missing TrEMBL file(s): {trembl_gz_files}")
+
+        elif len(matching_files) == 1:
+            self._need_to_concatenate_trembl_files = False
 
         [self._check_file_existence(file) for file in required_files]
 
@@ -90,3 +76,23 @@ class FilePreparer:
         if not file.exists():
             logger.error("Missing required file %s", file)
             raise FileNotFoundError(f"Missing {file=}")
+
+    def _get_preparation_calls(self) -> list[FunctionCall]:
+        preparation_calls = [
+            FunctionCall(
+                func=extract_from_tar, args=(self._path_to_new_taxdump, NCBIFiles)
+            ),
+            FunctionCall(func=decompress_gz, args=(self._path_to_sp_gz,)),
+            FunctionCall(func=decompress_gz, args=(self._path_to_sp_iso_gz,)),
+        ]
+
+        if self._need_to_concatenate_trembl_files:
+            preparation_calls.append(
+                FunctionCall(func=concatenate_files, args=(self._path_to_tr_gz,))
+            )
+
+        preparation_calls.append(
+            FunctionCall(func=decompress_gz, args=(self._path_to_tr_gz,))
+        )
+
+        return preparation_calls
