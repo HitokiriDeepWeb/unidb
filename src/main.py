@@ -67,7 +67,6 @@ path_to_source_archives: Path | None = app_args.path_to_source_archives
 no_clean_up: bool = app_args.no_clean_up_on_failure
 
 files_were_downloaded: bool = False
-archives_were_downloaded: bool = False
 download_is_required: bool = True
 preparation_is_required: bool = True
 
@@ -79,7 +78,7 @@ if path_to_source_files is not None:
 
 elif path_to_source_archives is not None:
     source_folder = path_to_source_archives
-    archives_were_downloaded = True
+    files_were_downloaded = True
     download_is_required = False
 
 else:
