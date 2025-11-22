@@ -28,6 +28,17 @@ def empty_fasta(tmp_path: Path) -> Path:
     return path_to_file
 
 
+@pytest.fixture
+def fasta_with_empty_sequence(tmp_path: Path) -> Path:
+    content = (
+        ">tr|A0AAA9SDZ8|A0AAA9SDZ8_BOVIN Sterol carrier protein 2 "
+        "OS=Bos taurus OX=9913 GN=SCP2 PE=4 SV=1"
+    )
+    path_to_file = tmp_path / "uniprot_no_sequence.fasta"
+    path_to_file.open("w").write(content)
+    return path_to_file
+
+
 expected_result = [
     SequenceRecord(
         is_reviewed=False,
@@ -126,6 +137,15 @@ def test_fasta_iterator_with_empty_file(empty_fasta: Path):
 def test_fasta_iterator_fail_to_open_file(tmp_path: Path):
     path_to_file = tmp_path / "no_file.fasta"
     sut = FastaIterator(path_to_file)
+
+    with pytest.raises(IteratorError):
+        list(sut)
+
+
+def test_fasta_iterator_fails_when_no_sequence_provided(
+    fasta_with_empty_sequence: Path,
+):
+    sut = FastaIterator(fasta_with_empty_sequence)
 
     with pytest.raises(IteratorError):
         list(sut)
