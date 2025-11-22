@@ -134,6 +134,12 @@ def concatenate_files(path_to_file: Path) -> None:
             f"File concatenation failed with code {e.returncode}: {e.stderr}"
         ) from e
 
+    except Exception as e:
+        logger.exception("File concatenation failed due to unexpected error")
+
+        set_shutdown_event()
+        raise FilePreparationError("File concatenation failed") from e
+
     finally:
         _delete_file_parts(files)
 
