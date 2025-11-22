@@ -10,21 +10,21 @@ _TRUNCATE_ALL_TABLES_QUERY: str = f"""
                                  CASCADE
                                  """
 
-_DROP_TYPE_SOURCE_QUERY: str = """DROP TYPE IF EXISTS sequence_source CASCADE"""
+_DROP_TYPE_SOURCE_QUERY: str = "DROP TYPE IF EXISTS sequence_source CASCADE"
 
 _DROP_IDXS_QUERY: tuple = (
-    f"""DROP INDEX IF EXISTS ncbi_organism_id_{Tables.UNIPROT}_idx""",
-    f"""DROP INDEX IF EXISTS {Tables.UNIPROT}_source_idx""",
-    """DROP INDEX IF EXISTS trgm_sequence_idx""",
-    f"""DROP INDEX IF EXISTS {Tables.UNIPROT}_pkey_idx""",
-    f"""DROP INDEX IF EXISTS {Tables.TAXONOMY}_pkey_idx""",
-    """DROP INDEX IF EXISTS unique_tax_name_idx""",
-    f"""DROP INDEX IF EXISTS taxon_{Tables.LINEAGE}_idpair_pkey_idx""",
-    f"""DROP INDEX IF EXISTS unique_taxon_{Tables.LINEAGE}_idpair_idx""",
+    f"DROP INDEX IF EXISTS ncbi_organism_id_{Tables.UNIPROT}_idx",
+    f"DROP INDEX IF EXISTS {Tables.UNIPROT}_source_idx",
+    "DROP INDEX IF EXISTS trgm_sequence_idx",
+    f"DROP INDEX IF EXISTS {Tables.UNIPROT}_pkey_idx",
+    f"DROP INDEX IF EXISTS {Tables.TAXONOMY}_pkey_idx",
+    "DROP INDEX IF EXISTS unique_tax_name_idx",
+    f"DROP INDEX IF EXISTS taxon_{Tables.LINEAGE}_idpair_pkey_idx",
+    f"DROP INDEX IF EXISTS unique_taxon_{Tables.LINEAGE}_idpair_idx",
 )
 
 # Create extension to create gin index on sequence later.
-_CREATE_TRGM_EXTENSION_QUERY: str = """CREATE EXTENSION IF NOT EXISTS pg_trgm"""
+_CREATE_TRGM_EXTENSION_QUERY: str = "CREATE EXTENSION IF NOT EXISTS pg_trgm"
 
 # If uniprot_kb exist already and we need to update -
 # drop all constraints and clean all the tables.
@@ -56,7 +56,7 @@ _CREATE_METADATA_QUERY: str = f"""
                              attribution_required VARCHAR(3)
                              )
                              """
-_DROP_TAXONOMY_QUERY: str = f"""DROP TABLE IF EXISTS {Tables.TAXONOMY} CASCADE"""
+_DROP_TAXONOMY_QUERY: str = f"DROP TABLE IF EXISTS {Tables.TAXONOMY} CASCADE"
 
 _CREATE_TAXONOMY_QUERY: str = f"""
                              CREATE TABLE IF NOT EXISTS {Tables.TAXONOMY}(
@@ -65,7 +65,7 @@ _CREATE_TAXONOMY_QUERY: str = f"""
                              tax_name VARCHAR(1000))
                              """
 
-_DROP_LINEAGE_QUERY: str = f"""DROP TABLE IF EXISTS {Tables.LINEAGE} CASCADE"""
+_DROP_LINEAGE_QUERY: str = f"DROP TABLE IF EXISTS {Tables.LINEAGE} CASCADE"
 
 _CREATE_LINEAGE_QUERY: str = f"""
                             CREATE TABLE IF NOT EXISTS {Tables.LINEAGE}(
@@ -73,7 +73,7 @@ _CREATE_LINEAGE_QUERY: str = f"""
                             ncbi_lineage_id INT)
                             """
 
-_DROP_MERGED_ID_QUERY: str = f"""DROP TABLE IF EXISTS {Tables.MERGED} CASCADE"""
+_DROP_MERGED_ID_QUERY: str = f"DROP TABLE IF EXISTS {Tables.MERGED} CASCADE"
 
 _CREATE_MERGED_ID_QUERY: str = f"""
                               CREATE TABLE IF NOT EXISTS {Tables.MERGED}(
@@ -91,7 +91,7 @@ _CREATE_SOURCE_ENUM_QUERY: str = """
                                 )
                                 """
 
-_DROP_UNIPROT_KB_QUERY: str = f"""DROP TABLE IF EXISTS {Tables.UNIPROT} CASCADE"""
+_DROP_UNIPROT_KB_QUERY: str = f"DROP TABLE IF EXISTS {Tables.UNIPROT} CASCADE"
 
 _CREATE_UNIPROT_KB_QUERY: str = f"""
                                CREATE TABLE IF NOT EXISTS {Tables.UNIPROT}(
@@ -173,9 +173,9 @@ _ADD_NOT_NULL_UNIPROT_KB_QUERY: str = f"""
 
 # Drop indexes that we don't need anymore.
 _DROP_UNUSED_IDXS_QUERY: tuple = (
-    f"""DROP INDEX IF EXISTS {Tables.MERGED}_tmp_current_ncbi_taxon_id""",
-    f"""DROP INDEX IF EXISTS {Tables.MERGED}_tmp_deprecated_ncbi_taxon_id""",
-    f"""DROP INDEX IF EXISTS {Tables.UNIPROT}_tmp_ncbi_organism_id""",
+    f"DROP INDEX IF EXISTS {Tables.MERGED}_tmp_current_ncbi_taxon_id",
+    f"DROP INDEX IF EXISTS {Tables.MERGED}_tmp_deprecated_ncbi_taxon_id",
+    f"DROP INDEX IF EXISTS {Tables.UNIPROT}_tmp_ncbi_organism_id",
 )
 
 _ADD_PK_CONSTRAINT_UNIPROT_KB_QUERY: str = f"""
