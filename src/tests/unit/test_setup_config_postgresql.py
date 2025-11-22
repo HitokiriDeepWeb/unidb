@@ -88,16 +88,19 @@ def test_setup_database_config(
 
 
 @pytest.mark.parametrize(
-    "desired_workers_number, expected_result", [(5, 5), (10, 10), (100, 10)]
+    "desired_workers_number, available_connections, expected_result",
+    [(5, 95, 5), (10, 95, 10), (100, 95, 10), (10, 5, 5)],
 )
 def test_adjust_pool_number_by_db_connection_limit(
-    mocker, desired_workers_number: int, expected_result: int
+    mocker,
+    desired_workers_number: int,
+    expected_result: int,
+    available_connections: int,
 ):
     mocker.patch(
         "infrastructure.database.postgresql.setup_config.os.cpu_count",
         return_value=10,
     )
-    available_connections = 95
 
     result = adjust_workers_by_db_connection_limit(
         desired_workers_number=desired_workers_number,
