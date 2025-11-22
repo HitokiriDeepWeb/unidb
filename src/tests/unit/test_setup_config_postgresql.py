@@ -5,6 +5,7 @@ import pytest
 from domain.services.queue_manager import QueueConfig
 from infrastructure.database.postgresql import (
     ConnectionPoolConfig,
+    adjust_workers_by_db_connection_limit,
     setup_connection_pool_config,
     setup_queue_config,
 )
@@ -81,6 +82,26 @@ def test_setup_database_config(
 
     result = setup_connection_pool_config(
         **default_arguments, workers_number=workers_number
+    )
+
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "desired_workers_number, expected_result", [(5, 5), (10, 10), (100, 10)]
+)
+def test_adjust_pool_number_by_db_connection_limit(
+    mocker, desired_workers_number: int, expected_result: int
+):
+    mocker.patch(
+        "infrastructure.database.postgresql.setup_config.os.cpu_count",
+        return_value=10,
+    )
+    available_connections = 95
+
+    result = adjust_workers_by_db_connection_limit(
+        desired_workers_number=desired_workers_number,
+        available_connections=available_connections,
     )
 
     assert result == expected_result
