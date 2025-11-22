@@ -64,6 +64,47 @@ branch = true
 omit = [
     "*/tests/*",
     "*/__init__.py",
+    "src/main.py",
+    "src/infrastructure/ui/cli.py",
+
+    # Config files.
+    "src/core/config.py",
+    "src/core/logging_config.py",
+    "src/domain/services/queue_manager/config.py",
+    "src/infrastructure/database/postgresql/config.py",
+    "src/infrastructure/database/postgresql/setup_config.py",
+    "src/infrastructure/preparation/prepare_system/config.py",
+
+    # Models and interfaces.
+    "src/application/interfaces.py",
+    "src/application/models.py",
+    "src/core/interfaces.py",
+    "src/core/models.py",
+    "src/domain/interfaces.py",
+    "src/domain/models.py",
+    "src/infrastructure/preparation/prepare_system/models.py",
+    "src/infrastructure/process_data/ncbi/models.py",
+
+    # Exceptions.
+    "src/application/services/exceptions.py",
+    "src/core/exceptions.py",
+    "src/domain/exceptions.py",
+    "src/infrastructure/database/exceptions.py",
+    "src/infrastructure/preparation/prepare_files/exceptions.py",
+    "src/infrastructure/preparation/prepare_system/exceptions.py",
+    "src/infrastructure/process_data/exceptions.py",
+
+    # Constants and types.
+    "src/domain/entities/constants.py",
+    "src/infrastructure/database/common_types.py",
+    "src/infrastructure/preparation/common_types.py",
+    "src/core/common_types.py",
+
+    # Entities with no logic.
+    "src/domain/entities/*",
+
+    # Database queries.
+    "src/infrastructure/database/postgresql/queries.py",
 ]
 
 [tool.coverage.report]
