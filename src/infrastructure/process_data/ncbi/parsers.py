@@ -222,10 +222,14 @@ class NamesParser:
 
     def _prepare_necessary_records(self, record: str) -> str | None:
         """Prepare and return line if it has scientific tag otherwise return None."""
-        if self._is_scientific_name(record):
-            return self._remove_misprint(record)
+        try:
+            if self._is_scientific_name(record):
+                return self._remove_misprint(record)
 
-        return None
+            return None
+
+        except Exception as e:
+            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
 
     def _is_scientific_name(self, record: str) -> bool:
         scientific_tag = "|\tscientific name\t|"
