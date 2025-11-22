@@ -21,6 +21,7 @@ unidb/
 │   │       └── uniprot_operator.py
 │   ├── core
 │   │   ├── config.py
+│   │   ├── common_types.py
 │   │   ├── exceptions.py
 │   │   ├── __init__.py
 │   │   ├── interfaces.py
