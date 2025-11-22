@@ -26,7 +26,7 @@ unidb/
 │   │   ├── __init__.py
 │   │   ├── interfaces.py                                     # Common interfaces that may be used elsewhere.
 │   │   ├── logging_config.py                                 # Logging configuration.
-│   │   ├── models.py                                         # Models for core module only.
+│   │   ├── models.py                                         # Models that may be used elsewhere.
 │   │   └── utils                                             # Common utilities that may be used elsewhere.
 │   │       ├── __init__.py
 │   │       ├── process_awaitables.py                         # Process async tasks and futures.
