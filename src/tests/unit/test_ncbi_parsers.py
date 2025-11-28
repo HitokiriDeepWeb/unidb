@@ -90,6 +90,25 @@ def test_names_parser_with_valid_content():
     assert result == expected_result
 
 
+def test_names_parser_substitutes_misprint():
+    source = StringIO(
+        "2727889\t|\tPleurocapsales cyanobacterium "
+        "'Beach rock 4+5\"'\t|\t\t|\tscientific name\t|\n"
+    )
+    expected_result = [
+        NameData(
+            ncbi_id=2727889,
+            tax_name="Pleurocapsales cyanobacterium 'Beach rock 4+5'",
+            specification="",
+        ),
+    ]
+    sut = NamesParser()
+
+    result = [sut.parse(line) for line in source]
+
+    assert result == expected_result
+
+
 def test_ranks_parser_with_valid_content():
     source = StringIO(
         "2\t|\t131567\t|\tsuperkingdom\t|\t\t|\t0\t|\t0\t|\t11\t"
@@ -131,6 +150,25 @@ def test_ranks_parser_with_valid_content():
     ],
 )
 def test_parsers_with_invalid_content(parser: NCBIParser):
+    source = StringIO(
+        "damaged_content|damaged_content|damaged_content||\tscientific name\t|"
+    )
+
+    with pytest.raises(InvalidRecordError):
+        [parser.parse(line) for line in source]
+
+
+@pytest.mark.parametrize(
+    "parser",
+    [
+        LineageParser(),
+        NamesParser(),
+        RanksParser(),
+        DelnodesParser(),
+        MergedParser(),
+    ],
+)
+def test_parsers_with_invalid_delimiter(parser: NCBIParser):
     source = StringIO(
         "damaged_content|damaged_content|damaged_content||\tscientific name\t|"
     )
