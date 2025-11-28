@@ -94,8 +94,7 @@ class AsyncQueueManager:
             queue.task_done()
 
     def _register_error(self, exception: Exception):
-        if self._first_exception is None:
-            self._first_exception = exception
+        self._first_exception = exception
 
     def _shutdown_on_event(self) -> None:
         while not self._record_queue.empty():
