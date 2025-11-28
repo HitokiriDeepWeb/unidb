@@ -29,13 +29,26 @@ async def test_process_tasks():
         task_result.append(value)
 
     expected_result = list(range(10))
+    tasks = [asyncio.create_task(append_to_list(value)) for value in range(10)]
 
     # Act.
-    tasks = [asyncio.create_task(append_to_list(value)) for value in range(10)]
     await process_tasks(tasks)
 
     # Assert.
     assert sorted(task_result) == expected_result
+
+
+@pytest.mark.asyncio
+async def test_process_tasks_raises_original_error():
+    # Arrange.
+    async def raise_error() -> None:
+        raise ValueError
+
+    tasks = [asyncio.create_task(raise_error())]
+
+    # Act + assert.
+    with pytest.raises(ValueError):
+        await process_tasks(tasks)
 
 
 @pytest.mark.asyncio
@@ -112,6 +125,6 @@ async def test_process_futures_raises_default_error():
 
             futures = [loop.run_in_executor(process_pool, processor.empty_function)]
 
-        # Act.
+        # Act + assert.
         with pytest.raises(ValueError):
             await process_futures(futures, event, ValueError())
