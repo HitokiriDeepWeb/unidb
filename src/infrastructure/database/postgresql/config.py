@@ -4,7 +4,6 @@ from dataclasses import dataclass
 @dataclass(frozen=True, slots=True)
 class ConnectionConfig:
     """
-
     Configuration dictionary for database connection parameters.
 
     database: Name of the database to connect to

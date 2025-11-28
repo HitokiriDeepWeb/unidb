@@ -54,4 +54,4 @@ jobs:
       - name: Check complexity with xenon and radon
         run: |
           source .venv/bin/activate
-          xenon --max-absolute B --max-average-num 2 .
+          xenon --max-absolute B --max-average A .

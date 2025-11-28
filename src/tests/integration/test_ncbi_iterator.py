@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from domain.entities import LineagePair, MergedPair, Taxonomy
+from infrastructure.process_data.exceptions import IteratorError
 from infrastructure.process_data.ncbi import (
     NCBIIterator,
     PresenterType,
@@ -88,3 +89,11 @@ def test_ncbi_iterator_with_merged_file(test_merged_dmp: Path):
     result = list(sut)
 
     assert result == expected_result
+
+
+def test_ncbi_iterator_fail_to_open_file(tmp_path: Path):
+    path_to_file = tmp_path / "no_file.txt"
+    sut = NCBIIterator(path_to_file, PresenterType.MERGED)
+
+    with pytest.raises(IteratorError):
+        list(sut)

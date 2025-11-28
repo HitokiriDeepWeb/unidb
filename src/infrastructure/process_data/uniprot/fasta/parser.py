@@ -20,6 +20,14 @@ class FastaParser:
         try:
             meta_info, biological_info = self._extract_sequence_info(raw_sequence_info)
             sequence = self._get_sequence(sequence_parts)
+
+        except Exception as e:
+            raise InvalidRecordError(
+                "Invalid record provided. Check file structure, record: "
+                f"{raw_sequence_info} sequence parts: {sequence_parts}"
+            ) from e
+
+        else:
             return SequenceRecord(
                 accession=meta_info.accession,
                 is_reviewed=meta_info.is_reviewed,
@@ -30,12 +38,6 @@ class FastaParser:
                 ncbi_id=biological_info.ncbi_id,
                 sequence=sequence,
             )
-
-        except Exception as e:
-            raise InvalidRecordError(
-                "Invalid record provided. Check file structure, record: "
-                f"{raw_sequence_info} sequence parts: {sequence_parts}"
-            ) from e
 
     @staticmethod
     def _get_sequence(sequence_parts: list[str]) -> str:

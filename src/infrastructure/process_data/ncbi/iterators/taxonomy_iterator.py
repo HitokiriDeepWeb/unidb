@@ -26,18 +26,14 @@ class TaxonomyIterator:
         self._ranks_parser = RanksParser()
 
     @contextmanager
-    def _open_file(self, path_to_file: Path):
-        file = path_to_file.open("r", encoding="utf-8")
-
+    def _open_file(self, path_to_file: Path) -> Iterator[IO]:
         try:
-            yield file
+            with path_to_file.open("r", encoding="utf-8") as file:
+                yield file
 
         except Exception as e:
             logger.exception("Failed to open file %s", path_to_file)
             raise IteratorError(f"Failed to open file {path_to_file}") from e
-
-        finally:
-            file.close()
 
     def __iter__(self) -> Iterator[Taxonomy]:
         """Take 'ranks' from file 'nodes.dmp' and add them to file 'names.dmp'."""
@@ -45,23 +41,24 @@ class TaxonomyIterator:
             self._open_file(self._path_to_ranks) as ranks,
             self._open_file(self._path_to_names) as names,
         ):
-            for name_record in names:
-                name = self._names_parser.parse(name_record)
-                yield from self._taxonomy_gen_if_name_not_none(name, ranks)
+            try:
+                for name_record in names:
+                    name = self._names_parser.parse(name_record)
+                    yield from self._taxonomy_gen_if_name_not_none(name, ranks)
+            except Exception as e:
+                logger.exception(
+                    "Failed to iterate over files %s, %s. Check files content",
+                    self._path_to_names,
+                    self._path_to_ranks,
+                )
+                raise IteratorError("Failed to iterate over files content") from e
 
     def _taxonomy_gen_if_name_not_none(
         self, name: NameData, ranks: IO
     ) -> Iterator[Taxonomy]:
         if name:
             rank = self._extract_rank(ranks)
-
-            try:
-                yield from self._taxonomy_gen(name, rank)
-
-            except Exception as e:
-                error_message = f"Failed to build dataclass from {name, rank}"
-                logger.exception(error_message)
-                raise IteratorError(error_message) from e
+            yield from self._taxonomy_gen(name, rank)
 
     def _extract_rank(self, ranks: IO):
         return self._ranks_parser.parse(next(ranks))

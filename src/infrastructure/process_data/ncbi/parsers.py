@@ -16,39 +16,34 @@ class LineageParser:
     def parse(self, record: str) -> LineageTaxonomyIDs:
         """Parse raw lineage record."""
         record_parts = self._get_record_parts(record)
-        main_taxid = self._extract_main_taxid(record, record_parts)
-        parent_taxids = self._extract_parent_taxids(record, record_parts)
-        return LineageTaxonomyIDs(main_taxid=main_taxid, parent_taxids=parent_taxids)
+        try:
+            main_taxid = self._extract_main_taxid(record_parts)
+            parent_taxids = self._extract_parent_taxids(record_parts)
+
+        except Exception as e:
+            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+
+        else:
+            return LineageTaxonomyIDs(
+                main_taxid=main_taxid, parent_taxids=parent_taxids
+            )
 
     @staticmethod
     def _get_record_parts(record: str) -> list[str]:
         delimiter = "\t|\t"
+        return record.strip().split(delimiter)
 
-        try:
-            return record.strip().split(delimiter)
-
-        except Exception as e:
-            raise InvalidRecordError(f"Invalid record provided: {record}") from e
-
-    def _extract_parent_taxids(self, record: str, record_parts: list[str]) -> list[int]:
+    @staticmethod
+    def _extract_parent_taxids(record_parts: list[str]) -> list[int]:
         """Extract parent taxon ID's of a specific taxon."""
         delimiter = "|"
-
-        try:
-            parent_taxids_str = record_parts[1].replace(delimiter, "").split()
-
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
-
+        parent_taxids_str = record_parts[1].replace(delimiter, "").split()
         return [int(parent_taxid) for parent_taxid in parent_taxids_str]
 
-    def _extract_main_taxid(self, record: str, record_parts: list[str]) -> int:
+    @staticmethod
+    def _extract_main_taxid(record_parts: list[str]) -> int:
         """Extract main taxon ID."""
-        try:
-            return int(record_parts[0])
-
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+        return int(record_parts[0])
 
 
 class MergedParser:
@@ -70,35 +65,30 @@ class MergedParser:
     def parse(self, record: str) -> MergedPair:
         """Parse raw merged record."""
         record_parts = self._get_record_parts(record)
-        deprecated_id = self._extract_deprecated_id(record, record_parts)
-        current_id = self._extract_current_id(record, record_parts)
-        return MergedPair(deprecated_id=deprecated_id, current_id=current_id)
+
+        try:
+            deprecated_id = self._extract_deprecated_id(record_parts)
+            current_id = self._extract_current_id(record_parts)
+
+        except Exception as e:
+            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+
+        else:
+            return MergedPair(deprecated_id=deprecated_id, current_id=current_id)
 
     @staticmethod
     def _get_record_parts(record: str) -> list[str]:
         delimiter = "\t|\t"
+        return record.strip().split(delimiter)
 
-        try:
-            return record.strip().split(delimiter)
+    @staticmethod
+    def _extract_deprecated_id(record_parts: list[str]) -> int:
+        return int(record_parts[0])
 
-        except Exception as e:
-            raise InvalidRecordError(f"Invalid record provided: {record}") from e
-
-    def _extract_deprecated_id(self, record: str, record_parts: list[str]) -> int:
-        try:
-            return int(record_parts[0])
-
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
-
-    def _extract_current_id(self, record: str, record_parts: list[str]) -> int:
+    @staticmethod
+    def _extract_current_id(record_parts: list[str]) -> int:
         delimiter = "\t|"
-
-        try:
-            return int(record_parts[1].replace(delimiter, ""))
-
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+        return int(record_parts[1].replace(delimiter, ""))
 
 
 class DelnodesParser:
@@ -118,16 +108,15 @@ class DelnodesParser:
     @ncbi_logger(_LOG_MESSAGE)
     def parse(self, record: str) -> int:
         """Parse raw delnode record."""
-        return self._extract_deleted_id(record)
-
-    def _extract_deleted_id(self, record: str) -> int:
-        delimiter = "\t|"
-
         try:
-            return int(record.strip().replace(delimiter, ""))
-
+            return self._extract_deleted_id(record)
         except Exception as e:
             raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+
+    @staticmethod
+    def _extract_deleted_id(record: str) -> int:
+        delimiter = "\t|"
+        return int(record.strip().replace(delimiter, ""))
 
 
 class RanksParser:
@@ -153,24 +142,21 @@ class RanksParser:
     def parse(self, record: str) -> str:
         """Parse raw nodes record."""
         record_parts = self._get_record_parts(record)
-        return self._extract_rank(record, record_parts)
-
-    @staticmethod
-    def _get_record_parts(record: str) -> list[str]:
-        delimiter = "\t|\t"
 
         try:
-            return record.strip().split(delimiter)
+            return self._extract_rank(record_parts)
 
         except Exception as e:
             raise InvalidRecordError(f"Invalid record provided: {record}") from e
 
-    def _extract_rank(self, record: str, record_parts: list[str]):
-        try:
-            return record_parts[2]
+    @staticmethod
+    def _get_record_parts(record: str) -> list[str]:
+        delimiter = "\t|\t"
+        return record.strip().split(delimiter)
 
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {record}") from e
+    @staticmethod
+    def _extract_rank(record_parts: list[str]):
+        return record_parts[2]
 
 
 class NamesParser:
@@ -193,30 +179,26 @@ class NamesParser:
     def parse(self, record: str) -> NameData | None:
         """Parse raw names record."""
         new_record: str | None = self._prepare_necessary_records(record)
-        return self._extract_name_data(new_record)
+
+        try:
+            return self._extract_name_data(new_record)
+
+        except Exception as e:
+            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {new_record}") from e
 
     def _extract_name_data(self, new_record: str | None) -> NameData | None:
         if not new_record:
             return None
 
-        try:
-            ncbi_id, tax_name, specification, *_ = self._split_record(new_record)
-
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {new_record}") from e
-
+        ncbi_id, tax_name, specification, *_ = self._split_record(new_record)
         return NameData(
             ncbi_id=int(ncbi_id), tax_name=tax_name, specification=specification
         )
 
-    def _split_record(self, new_record: str) -> list[str]:
+    @staticmethod
+    def _split_record(new_record: str) -> list[str]:
         delimiter = "\t|\t"
-
-        try:
-            return new_record.strip().split(delimiter)
-
-        except Exception as e:
-            raise InvalidRecordError(f"{self._LOG_MESSAGE}: {new_record}") from e
+        return new_record.strip().split(delimiter)
 
     def _prepare_necessary_records(self, record: str) -> str | None:
         """Prepare and return line if it has scientific tag otherwise return None."""
@@ -225,7 +207,8 @@ class NamesParser:
 
         return None
 
-    def _is_scientific_name(self, record: str) -> bool:
+    @staticmethod
+    def _is_scientific_name(record: str) -> bool:
         scientific_tag = "|\tscientific name\t|"
         return scientific_tag in record
 

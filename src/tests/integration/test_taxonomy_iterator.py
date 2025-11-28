@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from domain.entities import Taxonomy
+from infrastructure.process_data.exceptions import IteratorError
 from infrastructure.process_data.ncbi import TaxonomyIterator
 
 
@@ -51,6 +52,16 @@ def path_to_nodes_dmp(tmp_path: Path, nodes_content: str) -> Path:
     return path_to_file
 
 
+@pytest.fixture
+def path_to_invalid_names_dmp(tmp_path: Path) -> Path:
+    invalid_content = (
+        "damaged_content|damaged_content|damaged_content||\tscientific name\t|"
+    )
+    path_to_file = tmp_path / "invalid_names.dmp"
+    path_to_file.open("w").write(invalid_content)
+    return path_to_file
+
+
 def test_taxonomy_iterator_with_valid_content(
     path_to_nodes_dmp: Path, path_to_names_dmp: Path
 ):
@@ -70,3 +81,23 @@ def test_taxonomy_iterator_with_valid_content(
     result = list(sut)
 
     assert result == expected_result
+
+
+def test_taxonomy_iterator_with_invalid_content(
+    path_to_nodes_dmp: Path, path_to_invalid_names_dmp: Path
+):
+    sut = TaxonomyIterator(
+        path_to_ranks=path_to_nodes_dmp, path_to_names=path_to_invalid_names_dmp
+    )
+
+    with pytest.raises(IteratorError):
+        list(sut)
+
+
+def test_taxonomy_iterator_fail_to_open_files(tmp_path: Path):
+    path_to_ranks = tmp_path / "no_file.1.dmp"
+    path_to_names = tmp_path / "no_file.2.dmp"
+    sut = TaxonomyIterator(path_to_ranks=path_to_ranks, path_to_names=path_to_names)
+
+    with pytest.raises(IteratorError):
+        list(sut)

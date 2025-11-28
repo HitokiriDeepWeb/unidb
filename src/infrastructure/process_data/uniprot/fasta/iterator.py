@@ -2,7 +2,7 @@ import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import IO, TextIO
+from typing import IO
 
 from domain.entities import SequenceRecord
 from domain.models import ChunkRange
@@ -31,7 +31,12 @@ class FastaIterator:
 
     def _resolve_chunk_range(self) -> ChunkRange:
         if not self._chunk_range:
-            file_size = self._path_to_file.stat().st_size
+            try:
+                file_size = self._path_to_file.stat().st_size
+
+            except Exception as e:
+                self._logger.exception("Failed to open file %s", self._path_to_file)
+                raise IteratorError from e
 
             if file_size == 0:
                 raise IteratorError("Empty file provided")
@@ -45,19 +50,15 @@ class FastaIterator:
         return self._chunk_range
 
     @contextmanager
-    def _open_file(self, resolved_chunk_range: ChunkRange):
-        file = self._path_to_file.open("r", encoding="utf-8")
-        self._move_file_cursor_position(file, resolved_chunk_range)
-
+    def _open_file(self, resolved_chunk_range: ChunkRange) -> Iterator[IO]:
         try:
-            yield file
+            with self._path_to_file.open("r", encoding="utf-8") as file:
+                self._move_file_cursor_position(file, resolved_chunk_range)
+                yield file
 
-        except Exception:
+        except Exception as e:
             self._logger.exception("Failed to open file %s", self._path_to_file)
-            raise
-
-        finally:
-            file.close()
+            raise IteratorError from e
 
     @staticmethod
     def _move_file_cursor_position(file: IO, resolved_chunk_range: ChunkRange) -> None:
@@ -66,7 +67,7 @@ class FastaIterator:
 
     def _record_gen(
         self,
-        file: TextIO,
+        file: IO,
         resolved_chunk_range: ChunkRange,
     ) -> Iterator[SequenceRecord]:
         """Generate sequence data structs depending on chunk values."""

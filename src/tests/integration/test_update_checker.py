@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from aioresponses import aioresponses
 
+from application.services.exceptions import NoUpdateRequired
 from core.common_types import Link
 from infrastructure.preparation.prepare_files.update_checker import UpdateChecker
 
@@ -39,7 +40,7 @@ async def test_update_checker(test_path_to_modification_date: Path):
 
 
 @pytest.mark.asyncio
-async def test_update_checker_was_retried_until_complete(
+async def test_update_checker_retried_until_complete(
     test_path_to_modification_date: Path,
 ):
     # Arrange.
@@ -51,6 +52,7 @@ async def test_update_checker_was_retried_until_complete(
         mock.head(test_link, status=500)
         mock.head(test_link, status=500)
         mock.head(test_link, status=200, headers={"last-modified": last_modified})
+
         sut = UpdateChecker(
             url=test_link, path_to_modification_date=test_path_to_modification_date
         )
@@ -62,3 +64,20 @@ async def test_update_checker_was_retried_until_complete(
 
     # Assert.
     assert result == last_modified
+
+
+@pytest.mark.asyncio
+async def test_update_checker_when_no_update_required(
+    test_path_to_modification_date: Path,
+):
+    test_link = Link("http://example.com/test.txt")
+    last_modified = str(date(2025, 1, 1))
+
+    with aioresponses() as mock:
+        mock.head(test_link, status=200, headers={"last-modified": last_modified})
+        sut = UpdateChecker(
+            url=test_link, path_to_modification_date=test_path_to_modification_date
+        )
+
+        with pytest.raises(NoUpdateRequired):
+            await sut.need_update()

@@ -28,11 +28,13 @@ async def get_available_connections_amount(config: StringKeyMapping) -> int:
         ) + current_connection
 
         assert available_connections >= 0
-        return available_connections
 
     except asyncpg.InsufficientPrivilegeError:
         postgresql_default_available_connections = 95
         return postgresql_default_available_connections
+
+    else:
+        return available_connections
 
     finally:
         await conn.close()

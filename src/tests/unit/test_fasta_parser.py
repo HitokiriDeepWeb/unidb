@@ -153,3 +153,22 @@ def test_fasta_parser_with_invalid_content(
 
     with pytest.raises(InvalidRecordError):
         sut.parse(raw_sequence_info, sequence_parts)
+
+
+@pytest.mark.parametrize(
+    "raw_sequence_info, sequence_parts",
+    [
+        (
+            ">tr|A0A023T699|A0A023T699_EMCV Genome polyprotein "
+            "OS=Encephalomyocarditis virus OX=12104 PE=3 SV=1",
+            [],
+        ),
+    ],
+)
+def test_fasta_parser_with_empty_sequence_section(
+    raw_sequence_info: str, sequence_parts: list[str]
+):
+    sut = FastaParser()
+
+    with pytest.raises(InvalidRecordError):
+        sut.parse(raw_sequence_info, sequence_parts)

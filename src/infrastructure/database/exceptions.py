@@ -6,7 +6,7 @@ class QueryExecutionError(DatabaseError):
     """Failed to execute database query exception"""
 
 
-class ConnectionDatabaseError(DatabaseError):
+class DatabaseConnectionError(DatabaseError):
     """Connection / pool creation exception"""
 
 

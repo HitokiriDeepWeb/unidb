@@ -43,7 +43,7 @@ class AsyncQueueManager:
     async def __aexit__(self, *_) -> None:
         logger.debug("[%s] Queue manager exiting", os.getpid())
 
-        if is_shutdown_event_set() or self._first_exception:
+        if is_shutdown_event_set():
             self._shutdown_on_event()
 
         else:
@@ -94,8 +94,7 @@ class AsyncQueueManager:
             queue.task_done()
 
     def _register_error(self, exception: Exception):
-        if self._first_exception is None:
-            self._first_exception = exception
+        self._first_exception = exception
 
     def _shutdown_on_event(self) -> None:
         while not self._record_queue.empty():
@@ -103,10 +102,6 @@ class AsyncQueueManager:
             self._record_queue.task_done()
 
         self._cancel_all_workers()
-
-        if self._first_exception:
-            raise NeighbouringProcessError from self._first_exception
-
         raise NeighbouringProcessError
 
     async def _graceful_shutdown(self) -> None:

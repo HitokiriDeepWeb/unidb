@@ -40,6 +40,8 @@ def _extract_file_size_from_response(response: ClientResponse) -> int:
     try:
         return int(response.headers["Content-Length"])
 
-    except ValueError:
-        logger.exception("Unable to get file size.")
+    except KeyError:
+        logger.exception(
+            "Unable to get file size. 'Content-Length' header does not exist"
+        )
         raise

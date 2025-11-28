@@ -19,10 +19,6 @@ def ncbi_logger(log_message: str):
                 logger.exception("%s Current form: %s %s", log_message, args, kwargs)
                 raise
 
-            except Exception:
-                logger.exception("Unexpected Error happened.")
-                raise
-
         return wrapped
 
     return wrapper

@@ -7,6 +7,7 @@ import pytest
 
 from core.exceptions import NeighbouringProcessError
 from infrastructure.preparation.prepare_files import decompress_gz, extract_from_tar
+from infrastructure.preparation.prepare_files.exceptions import FilePreparationError
 
 
 @pytest.fixture
@@ -24,6 +25,13 @@ def test_tar(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
+def broken_tar(tmp_path: Path) -> Path:
+    tar_path = tmp_path / "broken.tar"
+    tar_path.open("w").close()
+    return tar_path
+
+
+@pytest.fixture
 def test_gz(tmp_path: Path) -> Path:
     content = b"test gz"
     gz_path = tmp_path / "test.txt.gz"
@@ -34,18 +42,16 @@ def test_gz(tmp_path: Path) -> Path:
     return gz_path
 
 
-def _mock_is_shutdown_event_set_func(mocker, flag: bool):
-    return mocker.patch(
-        "infrastructure.preparation.prepare_files.file_operations."
-        "is_shutdown_event_set",
-        return_value=flag,
-    )
+@pytest.fixture
+def broken_gz(tmp_path: Path) -> Path:
+    content = b"broken gz"
+    gz_path = tmp_path / "test.txt.gz"
 
+    with gzip.open(gz_path, "wb") as file:
+        file.write(content)
 
-def _mock_set_shutdown_event_func(mocker):
-    return mocker.patch(
-        "infrastructure.preparation.prepare_files.file_operations.set_shutdown_event",
-    )
+    gz_path.open("ab").write(b"random sequence")
+    return gz_path
 
 
 def test_extract_from_tar(mocker, test_tar: Path, tmp_path: Path):
@@ -62,10 +68,19 @@ def test_extract_from_tar_interrupted_when_shutdown_event_is_true(
     mocker, test_tar: Path
 ):
     _mock_is_shutdown_event_set_func(mocker, True)
-    _mock_set_shutdown_event_func(mocker)
 
     with pytest.raises(NeighbouringProcessError):
         extract_from_tar(path_to_file=test_tar, files_to_extract=("test.txt",))
+
+
+def test_extract_tar_raises_error_and_set_shutdown_event(mocker, broken_tar: Path):
+    _mock_is_shutdown_event_set_func(mocker, False)
+    mocker_func = _mock_set_shutdown_event_func(mocker)
+
+    with pytest.raises(FilePreparationError):
+        extract_from_tar(path_to_file=broken_tar, files_to_extract=("broken.txt",))
+
+    assert mocker_func.call_count == 1
 
 
 def test_decompress_gz(mocker, test_gz: Path, tmp_path: Path):
@@ -84,3 +99,27 @@ def test_decompress_gz_interrupted_when_shutdown_event_is_true(mocker, test_gz: 
 
     with pytest.raises(NeighbouringProcessError):
         decompress_gz(path_to_file=test_gz)
+
+
+def test_decompress_gz_raises_error_and_set_shutdown_event(mocker, broken_gz: Path):
+    _mock_is_shutdown_event_set_func(mocker, False)
+    mocker_func = _mock_set_shutdown_event_func(mocker)
+
+    with pytest.raises(FilePreparationError):
+        decompress_gz(path_to_file=broken_gz)
+
+    assert mocker_func.call_count == 1
+
+
+def _mock_is_shutdown_event_set_func(mocker, flag: bool):
+    return mocker.patch(
+        "infrastructure.preparation.prepare_files.file_operations."
+        "is_shutdown_event_set",
+        return_value=flag,
+    )
+
+
+def _mock_set_shutdown_event_func(mocker):
+    return mocker.patch(
+        "infrastructure.preparation.prepare_files.file_operations.set_shutdown_event",
+    )

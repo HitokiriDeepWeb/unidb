@@ -2,6 +2,7 @@ import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import IO
 
 from domain.entities import LineagePair, MergedPair, Taxonomy
 from infrastructure.process_data.exceptions import IteratorError
@@ -17,18 +18,14 @@ class NCBIIterator:
         self._presenter = presenter
 
     @contextmanager
-    def _open_file(self, path_to_file: Path):
-        file = path_to_file.open("r", encoding="utf-8")
+    def _open_file(self, path_to_file: Path) -> Iterator[IO]:
         try:
-            yield file
+            with path_to_file.open("r", encoding="utf-8") as file:
+                yield file
 
         except Exception as e:
-            error_message = f"Failed to open file {path_to_file}"
-            logger.exception(error_message, e)
-            raise IteratorError(error_message) from e
-
-        finally:
-            file.close()
+            logger.exception("Failed to open file %s", path_to_file)
+            raise IteratorError(f"Failed to open file {path_to_file}") from e
 
     def __iter__(self) -> Iterator[MergedPair | LineagePair | Taxonomy]:
         with self._open_file(self._path_to_file) as file:

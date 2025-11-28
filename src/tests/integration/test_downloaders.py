@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 from aioresponses import aioresponses
 
 from core.common_types import Link
@@ -14,6 +14,7 @@ from infrastructure.preparation.prepare_files.download import (
 from infrastructure.preparation.prepare_files.download.downloader_components import (
     _FileDownloader,
 )
+from infrastructure.preparation.prepare_files.exceptions import DownloadError
 
 
 @pytest.mark.asyncio
@@ -48,9 +49,11 @@ async def test_part_file_downloader(tmp_path: Path):
     file_part_number = 1
     test_body = b"Successful test"
     file_size = len(test_body)
+
     chunk_calculator = FileChunkCalculator(
         file_size=file_size, total_chunk_quantity=file_part_number
     )
+
     test_link = Link("http://example.com/test.txt")
 
     # Act.
@@ -75,7 +78,7 @@ async def test_part_file_downloader(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_file_downloader_was_retried_until_complete(tmp_path: Path):
+async def test_file_downloader_retried_until_complete(tmp_path: Path):
     # Arrange.
     test_body = b"Successful test"
     test_link = Link("http://example.com/test.txt")
@@ -99,3 +102,60 @@ async def test_file_downloader_was_retried_until_complete(tmp_path: Path):
 
     # Assert.
     assert result == test_body
+
+
+@pytest.mark.asyncio
+async def test_full_file_downloader_fails_and_raises_download_error(tmp_path: Path):
+    # Arrange.
+    test_link = Link("http://example.com/test.txt")
+    timeout = ClientTimeout(5)
+
+    # Act + assert.
+    async with ClientSession(raise_for_status=True) as session:
+        with aioresponses() as mock:
+            mock.get(test_link, status=500)
+            mock.get(test_link, status=500)
+            mock.get(test_link, status=500)
+
+            downloader = FullFileDownloader(
+                session=session,
+                url=test_link,
+                path_to_save=tmp_path,
+                semaphore=SEMAPHORE,
+            )
+
+            with pytest.raises(DownloadError):
+                await downloader.download_file(timeout=timeout)
+
+
+@pytest.mark.asyncio
+async def test_part_file_downloader_fails_and_raises_download_error(tmp_path: Path):
+    # Arrange.
+    file_part_number = 1
+    file_size = len(b"Test")
+
+    chunk_calculator = FileChunkCalculator(
+        file_size=file_size, total_chunk_quantity=file_part_number
+    )
+
+    test_link = Link("http://example.com/test.txt")
+    timeout = ClientTimeout(5)
+
+    # Act + assert.
+    async with ClientSession(raise_for_status=True) as session:
+        with aioresponses() as mock:
+            mock.get(test_link, status=500)
+            mock.get(test_link, status=500)
+            mock.get(test_link, status=500)
+
+            downloader = PartOfFileDownloader(
+                session=session,
+                url=test_link,
+                file_part_number=file_part_number,
+                path_to_save=tmp_path,
+                semaphore=SEMAPHORE,
+                file_chunker=chunk_calculator,
+            )
+
+            with pytest.raises(DownloadError):
+                await downloader.download_file(timeout=timeout)
