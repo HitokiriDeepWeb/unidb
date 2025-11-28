@@ -41,24 +41,24 @@ class TaxonomyIterator:
             self._open_file(self._path_to_ranks) as ranks,
             self._open_file(self._path_to_names) as names,
         ):
-            for name_record in names:
-                name = self._names_parser.parse(name_record)
-                yield from self._taxonomy_gen_if_name_not_none(name, ranks)
+            try:
+                for name_record in names:
+                    name = self._names_parser.parse(name_record)
+                    yield from self._taxonomy_gen_if_name_not_none(name, ranks)
+            except Exception as e:
+                logger.exception(
+                    "Failed to iterate over files %s, %s. Check files content",
+                    self._path_to_names,
+                    self._path_to_ranks,
+                )
+                raise IteratorError("Failed to iterate over files content") from e
 
     def _taxonomy_gen_if_name_not_none(
         self, name: NameData, ranks: IO
     ) -> Iterator[Taxonomy]:
         if name:
             rank = self._extract_rank(ranks)
-
-            try:
-                yield from self._taxonomy_gen(name, rank)
-
-            except Exception as e:
-                logger.exception("Failed to build dataclass from %s, %s", name, rank)
-                raise IteratorError(
-                    f"Failed to build dataclass from {name, rank}"
-                ) from e
+            yield from self._taxonomy_gen(name, rank)
 
     def _extract_rank(self, ranks: IO):
         return self._ranks_parser.parse(next(ranks))
