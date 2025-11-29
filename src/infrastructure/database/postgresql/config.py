@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True, slots=True)
 class ConnectionConfig:
     """
-    Configuration dictionary for database connection parameters.
+    Configuration for database connection parameters.
 
     database: Name of the database to connect to
     user: Username for database authentication
@@ -23,7 +23,7 @@ class ConnectionConfig:
 @dataclass(frozen=True, slots=True)
 class ConnectionPoolConfig(ConnectionConfig):
     """
-    Configuration dictionary for database connection pool parameters.
+    Configuration for database connection pool parameters.
 
     database: Name of the database to connect to
     user: Username for database authentication
