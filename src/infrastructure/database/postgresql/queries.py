@@ -140,7 +140,7 @@ _SUBSTITUTE_OUTDATED_NCBI_IDS_IN_UNIPROT_KB_QUERY: str = f"""
         UPDATE {Tables.UNIPROT}
         SET ncbi_organism_id = current_ncbi_taxon_id
         FROM {Tables.MERGED}
-        WHERE deprecated_ncbi_taxon_id in
+        WHERE deprecated_ncbi_taxon_id IN
             (SELECT ncbi_organism_id
              FROM {Tables.UNIPROT}
              INTERSECT
@@ -222,35 +222,35 @@ _ADD_NOT_NULL_CONSTRAINTS_LINEAGE_QUERY: str = f"""
 
 # Database comments.
 _UNIPROT_KB_COMMENTS_QUERY: tuple = (
-    f"COMMENT ON TABLE {Tables.UNIPROT} is "
+    f"COMMENT ON TABLE {Tables.UNIPROT} IS "
     "'All peptide records (Swiss-Prot, TrEMBL, reviewed isoforms).'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.source is "
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.source IS "
     "'Source sequence was added from (Swiss-Prot/TrEMBL/reviewed isoforms).'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.is_reviewed is "
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.is_reviewed IS "
     "'Was sequences reviewed manually.'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.accession is 'Sequence ID, PK.'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.entry_name is "
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.accession IS 'Sequence ID, PK.'",
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.entry_name IS "
     "'Former sequence ID with biological info.'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.peptide_name is 'Peptide name.'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.ncbi_organism_id is "
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.peptide_name IS 'Peptide name.'",
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.ncbi_organism_id IS "
     "'ID of the organism that possess this peptide, FK.'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.organism_name is "
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.organism_name IS "
     "'Organism name that possess this peptide.'",
-    f"COMMENT ON COLUMN {Tables.UNIPROT}.sequence is 'Peptide sequence itself.'",
+    f"COMMENT ON COLUMN {Tables.UNIPROT}.sequence IS 'Peptide sequence itself.'",
 )
 
 _TAXONOMY_COMMENTS_QUERY: tuple = (
-    f"COMMENT ON TABLE {Tables.TAXONOMY} is 'Taxonomy info.'",
-    f"COMMENT ON COLUMN {Tables.TAXONOMY}.ncbi_taxon_id is 'NCBI taxon ID, PK.'",
-    f"COMMENT ON COLUMN {Tables.TAXONOMY}.tax_name is 'Taxon name with NCBI taxon ID.'",
-    f"COMMENT ON COLUMN {Tables.TAXONOMY}.rank is 'Rank of the taxon.'",
+    f"COMMENT ON TABLE {Tables.TAXONOMY} IS 'Taxonomy info.'",
+    f"COMMENT ON COLUMN {Tables.TAXONOMY}.ncbi_taxon_id IS 'NCBI taxon ID, PK.'",
+    f"COMMENT ON COLUMN {Tables.TAXONOMY}.tax_name IS 'Taxon name with NCBI taxon ID.'",
+    f"COMMENT ON COLUMN {Tables.TAXONOMY}.rank IS 'Rank of the taxon.'",
 )
 
 _LINEAGE_COMMENTS_QUERY: tuple = (
-    f"COMMENT ON TABLE {Tables.LINEAGE} is 'Lineage taxons that correspond organism.'",
-    f"COMMENT ON COLUMN {Tables.LINEAGE}.ncbi_taxon_id is "
+    f"COMMENT ON TABLE {Tables.LINEAGE} IS 'Lineage taxons that correspond organism.'",
+    f"COMMENT ON COLUMN {Tables.LINEAGE}.ncbi_taxon_id IS "
     "'NCBI taxon ID of the organism that posess lineage taxons FK.'",
-    f"COMMENT ON COLUMN {Tables.LINEAGE}.ncbi_lineage_id is "
+    f"COMMENT ON COLUMN {Tables.LINEAGE}.ncbi_lineage_id IS "
     "'NCBI lineage taxon ID that are possessed by organism FK.'",
 )
 
@@ -334,6 +334,7 @@ CREATE_CONSTRAINTS_AND_IDXS_FOR_TAXONOMY_AND_LINEAGE_QUERIES: tuple = (
 )
 
 UNIPROT_KB_AND_TAXONOMY_VALIDATION_QUERIES: tuple = (
+    _CREATE_TMP_IDXS_QUERY,
     _SUBSTITUTE_OUTDATED_NCBI_IDS_IN_UNIPROT_KB_QUERY,
     _CREATE_NCBI_ID_FKEY_UNIPROT_KB,
     _ADD_NOT_NULL_UNIPROT_KB_QUERY,
