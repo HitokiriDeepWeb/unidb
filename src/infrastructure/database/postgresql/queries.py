@@ -1,14 +1,6 @@
 from domain.entities import Tables
 
 # Clean memory from table data and indexes.
-_TRUNCATE_ALL_TABLES_QUERY: str = f"""
-                                 TRUNCATE TABLE
-                                 {Tables.METADATA},
-                                 {Tables.TAXONOMY},
-                                 {Tables.LINEAGE},
-                                 {Tables.UNIPROT}
-                                 CASCADE
-                                 """
 
 _DROP_TYPE_SOURCE_QUERY: str = "DROP TYPE IF EXISTS sequence_source CASCADE"
 
@@ -276,6 +268,14 @@ _CREATE_TRGM_IDX_ON_TAXONOMY: str = f"""CREATE INDEX trgm_tax_name_idx ON
                                          {Tables.TAXONOMY}
                                          USING GIN(tax_name gin_trgm_ops)
                                      """
+_TRUNCATE_ALL_TABLES_QUERY: str = f"""
+                                 TRUNCATE TABLE
+                                 {Tables.METADATA},
+                                 {Tables.TAXONOMY},
+                                 {Tables.LINEAGE},
+                                 {Tables.UNIPROT}
+                                 CASCADE
+                                 """
 
 REMOVE_DATABASE_QUERIES: tuple = (
     _DROP_TYPE_SOURCE_QUERY,
