@@ -3,6 +3,7 @@ from pathlib import Path
 
 import asyncpg
 import pytest
+from asyncpg.exceptions import UndefinedTableError
 
 from application.services import (
     DatabaseFileCopier,
@@ -133,24 +134,14 @@ async def test_postgresql_uniprot_setup(tmp_path: Path):
         single_connection_config,
     ) = await _compose_dependencies(tmp_path)
 
-    query = """
-            SELECT u.accession
-            FROM uniprot_kb u
-            JOIN taxonomy t ON u.ncbi_organism_id = t.ncbi_taxon_id
-            WHERE ncbi_taxon_id = 9606
-            AND u.source = 'sp'
-            AND u.sequence like '%KHL%'
-            """
-    expected_result = [dict(accession="A0JNW5"), dict(accession="A1A519")]
-
-    # Act.
+    query = """SELECT accession FROM uniprot_kb"""
     await uniprot_setup.setup(workers_number=workers_number, download_is_required=False)
 
+    # Act.
+    await uniprot_setup.remove_on_failure(files_were_downloaded=True)
     conn = await asyncpg.connect(**asdict(single_connection_config))
-    rows = await conn.fetch(query)
-    result: list[dict[str, str]] = [dict(row) for row in rows]
+
+    with pytest.raises(UndefinedTableError):
+        await conn.fetch(query)
 
     await conn.close()
-
-    # Assert.
-    assert result == expected_result

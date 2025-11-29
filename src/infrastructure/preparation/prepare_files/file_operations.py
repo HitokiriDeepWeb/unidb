@@ -127,7 +127,9 @@ def concatenate_files(path_to_file: Path) -> None:
         _try_concatenate_files(path_to_file, files)
 
     except subprocess.CalledProcessError as e:
-        logger.exception("File concatenation failed with code %s: %s", e.returncode)
+        logger.exception(
+            "File concatenation failed with code %s: %s", e.returncode, e.stderr
+        )
 
         set_shutdown_event()
         raise FilePreparationError(

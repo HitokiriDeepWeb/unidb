@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from collections.abc import AsyncGenerator, Coroutine, Iterable, Iterator
 from contextlib import asynccontextmanager
@@ -6,7 +5,7 @@ from dataclasses import astuple
 from typing import Any
 
 import asyncpg
-from asyncpg import Connection, Pool
+from asyncpg import Pool
 
 from core.interfaces import StringKeyMapping
 from core.utils import create_tasks, process_tasks
@@ -66,16 +65,6 @@ class PostgreSQLAdapter:
         """Turn record to the form appropriate for database copy."""
         return astuple(record)
 
-    async def _execute_single_query_async(
-        self, conn: Connection, query: str, timeout: float | None = None
-    ) -> None:
-        try:
-            await asyncio.wait_for(conn.execute(query), timeout=timeout)
-
-        except Exception as e:
-            logger.exception("Failed to execute query: \n%s", query)
-            raise QueryExecutionError from e
-
     def _query_gen(self, queries: QueryNested) -> Iterator[str]:
         """Iterate over nested query iterable and yield separate query."""
 
@@ -86,8 +75,13 @@ class PostgreSQLAdapter:
             for query in queries:
                 yield from self._query_gen(query)
 
-    async def _execute_query(self, pool: Pool, query: QueryNested) -> None:
+    async def _execute_query(self, pool: Pool, query: str) -> None:
         """Execute query in separate connection from connection pool."""
         async with pool.acquire() as conn:
-            logger.debug("Executing %s", query)
-            return await conn.execute(query)
+            try:
+                logger.debug("Executing %s", query)
+                return await conn.execute(query)
+
+            except Exception as e:
+                logger.exception("Failed to execute query: \n%s", query)
+                raise QueryExecutionError from e
