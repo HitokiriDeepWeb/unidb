@@ -75,7 +75,7 @@ class PostgreSQLAdapter:
             for query in queries:
                 yield from self._query_gen(query)
 
-    async def _execute_query(self, pool: Pool, query: QueryNested) -> None:
+    async def _execute_query(self, pool: Pool, query: str) -> None:
         """Execute query in separate connection from connection pool."""
         async with pool.acquire() as conn:
             try:
