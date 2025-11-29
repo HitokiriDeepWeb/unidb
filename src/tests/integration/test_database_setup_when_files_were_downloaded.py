@@ -70,7 +70,9 @@ async def _compose_dependencies(
     update_checker = UpdateChecker()
     downloader = Downloader()
     system_preparer_config = SystemPreparerConfig(
-        download_is_required=False, trgm_required=True, accept_setup_automatically=True
+        download_is_required=False,
+        trgm_required=trgm_required,
+        accept_setup_automatically=True,
     )
     system_preparer = SystemPreparer(system_preparer_config)
     uniprot_setup = UniprotDatabaseSetup(
