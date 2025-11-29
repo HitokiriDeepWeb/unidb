@@ -45,17 +45,16 @@ class PostgreSQLUniprotLifecycle:
 
     async def reset_database(self, pool: Pool) -> None:
         """Clean uniprot database if it was set up before"""
+        # Truncate tables if database is being updated.
         try:
-            # Truncate tables if database is being updated.
             await self._execute_reset_operation(pool)
             logger.info("Clear existing tables")
 
         except Exception:
-            logger.error("Failed to clear tables %s", q.RESET_DATABASE_QUERIES)
-            pass
+            logger.error("Failed to clear tables")
 
     async def remove_database(self, pool: Pool) -> None:
-        await self._db_adapter.execute_queries_async(pool, q.REMOVE_DATABASE_QUERIES)
+        await self._db_adapter.execute_queries_sync(pool, q.REMOVE_DATABASE_QUERIES)
 
     async def _prepare_database(self, pool: Pool) -> None:
         """
