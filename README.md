@@ -1,5 +1,6 @@
-# UniProt Database Creator `unidb`
 ![unidb](images/unidb.png)
+
+# UniProt Database Creator `unidb`
 
 ## Table of Contents
 
