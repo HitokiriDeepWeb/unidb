@@ -139,6 +139,8 @@ async def test_postgresql_uniprot_setup(tmp_path: Path):
 
     # Act.
     await uniprot_setup.remove_on_failure(files_were_downloaded=True)
+
+    # Assert.
     conn = await asyncpg.connect(**asdict(single_connection_config))
 
     with pytest.raises(UndefinedTableError):
