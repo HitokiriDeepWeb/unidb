@@ -101,7 +101,8 @@ class SystemPreparer:
                 break
 
             elif answer == UserAnswer.NO:
-                raise SystemExit("Setup cancelled by user")
+                logger.info("Setup cancelled by user")
+                raise SystemExit
 
             else:
                 print("Input must be 'y' or 'n'")
