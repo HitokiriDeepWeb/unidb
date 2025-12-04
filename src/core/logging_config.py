@@ -29,6 +29,17 @@ logging_config = {
             "format": "{levelname} {message}",
             "style": "{",
         },
+        "colored_verbose": {
+            "()": "colorlog.ColoredFormatter",
+            "fmt": "{log_color}{name} {levelname} {asctime} {module} "
+            "{process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "colored_simple": {
+            "()": "colorlog.ColoredFormatter",
+            "fmt": "{log_color}{levelname} {message}",
+            "style": "{",
+        },
     },
     "filters": {
         "level_filter": {
@@ -56,7 +67,7 @@ logging_config = {
         },
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "verbose",
+            "formatter": "colored_verbose",
             "level": "DEBUG",
         },
     },
@@ -135,4 +146,4 @@ def _set_formatter(verbose: bool) -> None:
     if not verbose:
         logging_config["handlers"]["debug_file"]["formatter"] = "simple"
         logging_config["handlers"]["error_file"]["formatter"] = "simple"
-        logging_config["handlers"]["console"]["formatter"] = "simple"
+        logging_config["handlers"]["console"]["formatter"] = "colored_simple"
