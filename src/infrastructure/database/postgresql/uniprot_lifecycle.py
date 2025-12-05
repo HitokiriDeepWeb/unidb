@@ -52,6 +52,7 @@ class PostgreSQLUniprotLifecycle:
 
         except Exception:
             logger.error("Failed to clear tables")
+            logger.info("Proceed setup")
 
     async def remove_database(self, pool: Pool) -> None:
         await self._db_adapter.execute_queries_sync(pool, q.REMOVE_DATABASE_QUERIES)
