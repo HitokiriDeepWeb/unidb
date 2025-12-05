@@ -18,7 +18,6 @@
 - [System Requirements and Prerequisites](#system-requirements-and-prerequisites)
 - [Main Terms (briefly)](#main-terms-briefly)
 - [Database](#database)
-  - [General Information](#general-information)
   - [Database Structure](#database-structure)
   - [Database Sources](#database-sources)
   - [Taxonomy](#taxonomy)
@@ -235,6 +234,8 @@ python unidb.pex [OPTIONS]
 
 ### Notes
 
+The first setup will throw error and warning when utility will try to truncate non-existing tables. Ignore these messages.
+
 It is recommended to use `-j` with number of CPU cores.
 The `-i` (`--trgm`) flag improves sequence search performance but increases database creation time tremendously and doubles the database size.
 When using `-y`, all confirmations are accepted automatically. If no source files provided - they will be downloaded automatically.
@@ -287,10 +288,6 @@ To create database with trgm index and download all the files you will need appr
 - _NCBI ID_ - ID of taxons from the NCBI Taxonomy database.
 
 ## Database
-
-### General Information
-
-The database contains data from [UniProtKB](https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/) and [NCBI Taxonomy](https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/) knowledgebases.
 
 ### Database Structure
 
