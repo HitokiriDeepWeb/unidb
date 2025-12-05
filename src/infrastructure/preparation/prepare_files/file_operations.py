@@ -168,4 +168,4 @@ def _delete_file_parts(files: list[str]) -> None:
 def _delete_file(path_to_file: Path) -> None:
     logger.info("...removing %s file", path_to_file.name)
     path_to_file.unlink(missing_ok=True)
-    logger.info("Done")
+    logger.info("File %s has been removed", path_to_file.name)

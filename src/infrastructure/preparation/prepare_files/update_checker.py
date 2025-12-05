@@ -83,7 +83,7 @@ class UpdateChecker:
 
         async with session.head(url=self._url, timeout=timeout) as resp:
             current_modification_date: str = resp.headers["last-modified"]
-            logger.debug("modification date: %s", current_modification_date)
+            logger.debug("Modification date: %s", current_modification_date)
             return current_modification_date
 
     def _database_is_not_up_to_date(
