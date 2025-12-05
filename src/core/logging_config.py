@@ -31,13 +31,13 @@ logging_config = {
         },
         "colored_verbose": {
             "()": "colorlog.ColoredFormatter",
-            "fmt": "{log_color}{name} {levelname} {asctime} {module} "
+            "fmt": "{log_color}{name} {reset}{levelname} {asctime} {module} "
             "{process:d} {thread:d} {message}",
             "style": "{",
         },
         "colored_simple": {
             "()": "colorlog.ColoredFormatter",
-            "fmt": "{log_color}{levelname} {message}",
+            "fmt": "{log_color}{levelname} {reset}{message}",
             "style": "{",
         },
     },
