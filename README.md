@@ -235,6 +235,7 @@ python unidb.pex [OPTIONS]
 ### Notes
 
 The first setup will throw error and warning when utility will try to truncate non-existing tables. Ignore these messages.
+When you try to update database - the old data will be erased first.
 
 It is recommended to use `-j` with number of CPU cores.
 The `-i` (`--trgm`) flag improves sequence search performance but increases database creation time tremendously and doubles the database size.
