@@ -18,6 +18,8 @@ from core.utils import create_tasks, init_shutdown_event, process_tasks
 
 
 class UniprotDatabaseSetup:
+    """Main orchestrator that manages all the processes to setup UniProt database."""
+
     def __init__(
         self,
         uniprot_operator: UniprotOperator,

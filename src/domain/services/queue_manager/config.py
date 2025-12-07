@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class QueueConfig:
     queue_max_size: int
     queue_workers_number: int
