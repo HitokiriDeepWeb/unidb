@@ -101,7 +101,8 @@ class SystemPreparer:
                 break
 
             elif answer == UserAnswer.NO:
-                raise SystemExit("Setup cancelled by user")
+                logger.info("Setup cancelled by user")
+                raise SystemExit
 
             else:
                 print("Input must be 'y' or 'n'")
@@ -113,7 +114,7 @@ class SystemPreparer:
             if await async_os.path.exists(str(path_to_file)):
                 await async_os.unlink(str(path_to_file))
 
-            logger.info("Done")
+            logger.info("File %s has been removed", path_to_file.name)
 
         coroutines: list[Coroutine] = [
             _async_delete_file(file) for file in DEFAULT_SOURCE_FILES_FOLDER.iterdir()
