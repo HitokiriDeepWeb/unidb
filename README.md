@@ -155,7 +155,7 @@ python unidb.pex [OPTIONS]
 - Type: directory path
 - Example: `--path-to-source-archives /path/to/uniprot/archives`
 
-`-y`
+`--accept-all`, `-y`
 
 - Description: Automatically accept all conditions and setup
 - Type: flag (no value required)

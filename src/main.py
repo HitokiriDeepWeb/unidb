@@ -163,7 +163,7 @@ async def _compose_dependencies():
     system_preparer_config = SystemPreparerConfig(
         download_is_required=download_is_required,
         trgm_required=trgm_required,
-        accept_setup_automatically=app_args.y,
+        accept_setup_automatically=app_args.accept_all,
     )
     system_preparer = SystemPreparer(system_preparer_config)
     downloader = Downloader()
