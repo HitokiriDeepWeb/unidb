@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 class FilePreparer:
+    """Prepare all the required files for processing"""
+
     def __init__(
         self,
         source_folder: Path = DEFAULT_SOURCE_FILES_FOLDER,

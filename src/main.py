@@ -163,7 +163,7 @@ async def _compose_dependencies():
     system_preparer_config = SystemPreparerConfig(
         download_is_required=download_is_required,
         trgm_required=trgm_required,
-        accept_setup_automatically=app_args.y,
+        accept_setup_automatically=app_args.accept_all,
     )
     system_preparer = SystemPreparer(system_preparer_config)
     downloader = Downloader()
@@ -237,9 +237,8 @@ def _get_database_file_copier(
     return db_copier
 
 
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
+try:
+    asyncio.run(main())
 
-    except KeyboardInterrupt:
-        logger.info("User terminated program manually")
+except KeyboardInterrupt:
+    logger.info("User terminated program manually")

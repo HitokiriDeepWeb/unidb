@@ -46,6 +46,7 @@ parser.add_argument(
     "do not want script to download them",
 )
 parser.add_argument(
+    "--accept-all",
     "-y",
     action="store_true",
     help="If you want to automatically say 'yes' "
