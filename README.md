@@ -261,7 +261,7 @@ Required archives in case you use `--path-to-source-archives`, `-z` option:
 
 ## System Requirements And Prerequisites
 
-- **Python** 3.12+
+- **Python** 3.13+
 - **PostgreSQL** 9+
 - **\*nix system** (Linux, MacOS*)
 - `cat` utility
