@@ -19,6 +19,15 @@ from infrastructure.preparation.prepare_files.file_operations import (
 logger = logging.getLogger(__name__)
 
 
+def process_trembl_file(path_to_trembl: Path) -> None:
+    try:
+        concatenate_files(path_to_trembl)
+        decompress_gz(path_to_trembl)
+
+    except Exception as e:
+        raise FilePreparationError(f"Unable to prepare file {path_to_trembl}") from e
+
+
 class FilePreparer:
     """Prepare all the required files for processing"""
 
@@ -90,7 +99,7 @@ class FilePreparer:
 
         if self._need_to_concatenate_trembl_files:
             preparation_calls.append(
-                FunctionCall(func=concatenate_files, args=(self._path_to_tr_gz,))
+                FunctionCall(func=process_trembl_file, args=(self._path_to_tr_gz,))
             )
 
         preparation_calls.append(
