@@ -1,3 +1,4 @@
+import logging
 import os
 
 import asyncpg
@@ -5,6 +6,8 @@ import asyncpg
 from core.interfaces import StringKeyMapping
 from domain.services.queue_manager import QueueConfig
 from infrastructure.database.postgresql.config import ConnectionPoolConfig
+
+logger = logging.getLogger(__name__)
 
 
 async def get_available_connections_amount(config: StringKeyMapping) -> int:
@@ -34,6 +37,10 @@ async def get_available_connections_amount(config: StringKeyMapping) -> int:
         return postgresql_default_available_connections
 
     else:
+        logger.debug(
+            "The available amount of connections is %s",
+            available_connections,
+        )
         return available_connections
 
     finally:
@@ -43,18 +50,21 @@ async def get_available_connections_amount(config: StringKeyMapping) -> int:
 def adjust_workers_by_db_connection_limit(
     desired_workers_number: int, available_connections: int
 ) -> int:
-    """Restrict workers num quantity due to database connection amount limit."""
+    """Restrict workers number quantity due to database connection amount limit."""
     cpu_count = _set_system_cpu_number(available_connections)
 
     if _is_workers_number_valid(
         desired_workers_number, cpu_count, available_connections
     ):
+        logger.debug("%s number of workers will be used", desired_workers_number)
         return desired_workers_number
 
     elif _can_use_cpu_count(cpu_count, available_connections):
+        logger.debug("%s number of workers will be used", cpu_count)
         return cpu_count
 
     else:
+        logger.debug("%s number of workers will be used", available_connections)
         return available_connections
 
 
@@ -70,6 +80,11 @@ def setup_connection_pool_config(
     """Setup database config depending on number of workers provided."""
     min_pool_size, max_pool_size = _adjust_pool_number_by_number_of_workers(
         workers_number, available_connections
+    )
+    logger.debug(
+        "The minimal database pool size is %, the maximum database pool size is %",
+        min_pool_size,
+        max_pool_size,
     )
     return ConnectionPoolConfig(
         database=database,
@@ -89,6 +104,9 @@ def setup_queue_config(workers_number: int, available_connections: int) -> Queue
         workers_number, available_connections
     )
     queue_workers_number = queue_max_size + reserved_workers
+    logger.debug(
+        "The amount of workers in the queue per processwill be %", queue_workers_number
+    )
     return QueueConfig(
         queue_max_size=queue_max_size, queue_workers_number=queue_workers_number
     )
