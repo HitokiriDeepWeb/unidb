@@ -37,10 +37,7 @@ async def get_available_connections_amount(config: StringKeyMapping) -> int:
         return postgresql_default_available_connections
 
     else:
-        logger.debug(
-            "The available amount of connections is %s",
-            available_connections,
-        )
+        logger.debug("The available amount of connections is %s", available_connections)
         return available_connections
 
     finally:
@@ -56,15 +53,15 @@ def adjust_workers_by_db_connection_limit(
     if _is_workers_number_valid(
         desired_workers_number, cpu_count, available_connections
     ):
-        logger.debug("%s number of workers will be used", desired_workers_number)
+        logger.debug("The number of processes is %s", desired_workers_number)
         return desired_workers_number
 
     elif _can_use_cpu_count(cpu_count, available_connections):
-        logger.debug("%s number of workers will be used", cpu_count)
+        logger.debug("The number of processes is %s", cpu_count)
         return cpu_count
 
     else:
-        logger.debug("%s number of workers will be used", available_connections)
+        logger.debug("The number of processes is %s", available_connections)
         return available_connections
 
 
@@ -82,7 +79,7 @@ def setup_connection_pool_config(
         workers_number, available_connections
     )
     logger.debug(
-        "The minimal database pool size is %, the maximum database pool size is %",
+        "The minimal database pool size is %s, the maximum database pool size is %s",
         min_pool_size,
         max_pool_size,
     )
@@ -105,7 +102,8 @@ def setup_queue_config(workers_number: int, available_connections: int) -> Queue
     )
     queue_workers_number = queue_max_size + reserved_workers
     logger.debug(
-        "The amount of workers in the queue per processwill be %", queue_workers_number
+        "The amount of workers in the queue per process will be %s",
+        queue_workers_number,
     )
     return QueueConfig(
         queue_max_size=queue_max_size, queue_workers_number=queue_workers_number
