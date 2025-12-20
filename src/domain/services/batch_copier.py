@@ -126,7 +126,7 @@ class BatchCopier:
             )
             set_shutdown_event()
             raise CopyToUniprotDBError(
-                f"Failed to copy len(records) to table {self._table_name}.\n"
+                f"Failed to copy {len(records)} to table {self._table_name}.\n"
                 f"Record sample: {sample}"
             ) from e
 
