@@ -95,7 +95,7 @@ async def test_file_downloader_retried_until_complete(tmp_path: Path):
                 session=session, url=test_link, semaphore=SEMAPHORE
             )
             await downloader.execute_http_download(
-                path_to_file=path_to_file, timeout=SMALL_FILE_TIMEOUT
+                path_to_file=path_to_file, timeout=SMALL_FILE_TIMEOUT, headers={}
             )
 
     result = path_to_file.open("rb").read()
