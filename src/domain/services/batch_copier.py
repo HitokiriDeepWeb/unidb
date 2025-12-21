@@ -32,7 +32,7 @@ class BatchCopier:
         record_gen: SequenceIteratorProtocol | NCBIIteratorProtocol,
         queue_config: QueueConfig,
         table_name: Tables,
-        timeout: float = 180.0,
+        timeout: float = 300.0,
     ):
         self._db_adapter = db_adapter
         self._batch_size = batch_size
