@@ -128,6 +128,5 @@ def _can_use_cpu_count(system_cpu_number: int, available_connections: int) -> bo
 def _adjust_pool_number_by_number_of_workers(
     workers_number: int, available_connections: int
 ) -> tuple[int, int]:
-    max_size = available_connections // workers_number
-    min_size = max_size // 2 if max_size > 1 else 1
+    min_size = max_size = available_connections // workers_number
     return min_size, max_size
