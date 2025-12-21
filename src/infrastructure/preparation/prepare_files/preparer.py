@@ -102,8 +102,9 @@ class FilePreparer:
                 FunctionCall(func=process_trembl_file, args=(self._path_to_tr_gz,))
             )
 
-        preparation_calls.append(
-            FunctionCall(func=decompress_gz, args=(self._path_to_tr_gz,))
-        )
+        else:
+            preparation_calls.append(
+                FunctionCall(func=decompress_gz, args=(self._path_to_tr_gz,))
+            )
 
         return preparation_calls

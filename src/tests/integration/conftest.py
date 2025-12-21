@@ -1,3 +1,5 @@
+import gzip
+import tarfile
 import time
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -283,6 +285,41 @@ def uniprot_trembl_file(tmp_path: Path) -> Path:
     path_to_file = tmp_path / UniprotFiles.TREMBL
     path_to_file.open("w").write(uniprot_trembl_content)
     return path_to_file
+
+
+@pytest.fixture(autouse=True)
+def taxdump_file(tmp_path: Path) -> None:
+    path_to_file = tmp_path / "new_taxdump.tar.gz"
+    files = [tmp_path / file for file in NCBIFiles]
+
+    with tarfile.open(path_to_file, "w:gz") as tar:
+        [tar.add(file) for file in files]
+
+    [file.unlink for file in files]
+
+
+@pytest.fixture(autouse=True)
+def uniprot_sprot_file_gz(tmp_path: Path, uniprot_sprot_file: Path) -> None:
+    path_to_file = Path(f"{tmp_path}/{UniprotFiles.SWISS_PROT}.gz")
+
+    with open(uniprot_sprot_file, "rb") as file:
+        content = file.read()
+
+    with gzip.open(path_to_file, "wb") as file_gz:
+        file_gz.write(content)
+
+
+@pytest.fixture(autouse=True)
+def uniprot_sprot_varsplic_file_gz(
+    tmp_path: Path, uniprot_sprot_varsplic_file: Path
+) -> None:
+    path_to_file = Path(f"{tmp_path}/{UniprotFiles.SP_ISOFORMS}.gz")
+
+    with open(uniprot_sprot_varsplic_file, "rb") as file:
+        content = file.read()
+
+    with gzip.open(path_to_file, "wb") as file_gz:
+        file_gz.write(content)
 
 
 @pytest.fixture(scope="session", autouse=True)
