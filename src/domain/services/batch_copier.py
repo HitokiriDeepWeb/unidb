@@ -32,7 +32,7 @@ class BatchCopier:
         record_gen: SequenceIteratorProtocol | NCBIIteratorProtocol,
         queue_config: QueueConfig,
         table_name: Tables,
-        timeout: float = 30.0,
+        timeout: float = 1800.0,
     ):
         self._db_adapter = db_adapter
         self._batch_size = batch_size
@@ -126,7 +126,7 @@ class BatchCopier:
             )
             set_shutdown_event()
             raise CopyToUniprotDBError(
-                f"Failed to copy len(records) to table {self._table_name}.\n"
+                f"Failed to copy {len(records)} to table {self._table_name}.\n"
                 f"Record sample: {sample}"
             ) from e
 

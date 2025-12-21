@@ -267,7 +267,7 @@ Required archives in case you use `--path-to-source-archives`, `-z` option:
 - `cat` utility
 - **Internet connection** (unless using pre-downloaded files)
 - **RAM** 4 GB
-- **Disk space** 150 GB (minimum)
+- **Disk space** 200 GB (minimum)
 
 *_Should work as well but not tested._
 

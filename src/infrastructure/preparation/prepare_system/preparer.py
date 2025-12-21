@@ -83,7 +83,11 @@ class SystemPreparer:
     def _prompt_user_for_disk_space_confirmation(
         self, file_size: float, database_size: float
     ) -> None:
-        max_setup_size = file_size + (file_size / self._DECOMPRESSION_COEFF)
+        max_setup_size = (
+            file_size + database_size
+            if not self._config.trgm_required
+            else database_size
+        )
         while True:
             prompt: str = (
                 "The files to download approximate size will estimate "

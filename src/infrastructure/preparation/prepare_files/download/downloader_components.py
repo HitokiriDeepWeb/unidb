@@ -66,7 +66,14 @@ class FullFileDownloader:
         logger.info("...downloading %s", self._url)
 
         try:
-            await self._file_downloader.execute_http_download(path_to_file, timeout)
+            headers = {
+                "User-Agent": "unidb (+https://github.com/HitokiriDeepWeb/unidb)",
+            }
+            await self._file_downloader.execute_http_download(
+                path_to_file=path_to_file,
+                timeout=timeout,
+                headers=headers,
+            )
 
         except asyncio.TimeoutError as e:
             logger.exception(
@@ -149,7 +156,10 @@ class PartOfFileDownloader:
         chunk_range: ChunkRange = self._file_chunker.get_chunk_range(
             self._file_part_number
         )
-        return {"Range": f"bytes={chunk_range.start}-{chunk_range.end}"}
+        return {
+            "Range": f"bytes={chunk_range.start}-{chunk_range.end}",
+            "User-Agent": "unidb (+https://github.com/HitokiriDeepWeb/unidb)",
+        }
 
 
 class _FileDownloader:
@@ -175,7 +185,7 @@ class _FileDownloader:
         self,
         path_to_file: Path,
         timeout: ClientTimeout,
-        headers: dict[str, str] | None = None,
+        headers: dict[str, str],
     ) -> None:
         file_name = self.extract_file_name_from_url()
 
@@ -199,7 +209,7 @@ class _FileDownloader:
         self,
         path_to_file: Path,
         timeout: ClientTimeout,
-        headers: dict[str, str] | None = None,
+        headers: dict[str, str],
     ) -> None:
         """Download file and write its content to file."""
         async with (

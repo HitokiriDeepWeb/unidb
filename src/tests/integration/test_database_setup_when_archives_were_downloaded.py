@@ -1,5 +1,4 @@
 import gzip
-import tarfile
 from dataclasses import asdict
 from pathlib import Path
 
@@ -11,7 +10,7 @@ from application.services import (
     UniprotDatabaseSetup,
     UniprotOperator,
 )
-from core.config import NCBIFiles, UniprotFiles
+from core.config import UniprotFiles
 from infrastructure.database.postgresql import (
     ConnectionConfig,
     ConnectionPoolConfig,
@@ -40,41 +39,6 @@ from tests.integration.conftest import DATABASE_ENV
 
 
 @pytest.fixture(autouse=True)
-def taxdump_file(tmp_path: Path) -> None:
-    path_to_file = tmp_path / "new_taxdump.tar.gz"
-    files = [tmp_path / file for file in NCBIFiles]
-
-    with tarfile.open(path_to_file, "w:gz") as tar:
-        [tar.add(file) for file in files]
-
-    [file.unlink for file in files]
-
-
-@pytest.fixture(autouse=True)
-def uniprot_sprot_file_gz(tmp_path: Path, uniprot_sprot_file: Path) -> None:
-    path_to_file = Path(f"{tmp_path}/{UniprotFiles.SWISS_PROT}.gz")
-
-    with open(uniprot_sprot_file, "rb") as file:
-        content = file.read()
-
-    with gzip.open(path_to_file, "wb") as file_gz:
-        file_gz.write(content)
-
-
-@pytest.fixture(autouse=True)
-def uniprot_sprot_varsplic_file_gz(
-    tmp_path: Path, uniprot_sprot_varsplic_file: Path
-) -> None:
-    path_to_file = Path(f"{tmp_path}/{UniprotFiles.SP_ISOFORMS}.gz")
-
-    with open(uniprot_sprot_varsplic_file, "rb") as file:
-        content = file.read()
-
-    with gzip.open(path_to_file, "wb") as file_gz:
-        file_gz.write(content)
-
-
-@pytest.fixture(autouse=True)
 def uniprot_trembl_file_gz(tmp_path: Path, uniprot_trembl_file) -> None:
     path_to_file = Path(f"{tmp_path}/{UniprotFiles.TREMBL}.gz")
 
@@ -99,7 +63,7 @@ async def _compose_dependencies(
     available_connections = await get_available_connections_amount(
         asdict(single_connection_config)
     )
-    workers_number = 8
+    workers_number = 4
     connection_pool_config: ConnectionPoolConfig = setup_connection_pool_config(
         **asdict(single_connection_config),
         workers_number=workers_number,

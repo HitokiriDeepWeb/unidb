@@ -12,15 +12,16 @@ from infrastructure.process_data.exceptions import (
 )
 from infrastructure.process_data.uniprot.fasta.parser import FastaParser
 
+logger = logging.getLogger(__name__)
+
 
 class FastaIterator:
     """Iterate over sequence records and yield parsed data."""
 
     def __init__(self, path_to_file: Path, chunk_range: ChunkRange | None = None):
         self._path_to_file = path_to_file
-        self._fasta_parser = FastaParser()
         self._chunk_range = chunk_range
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._fasta_parser = FastaParser()
 
     def __iter__(self) -> Iterator[SequenceRecord]:
         """Generate sequence data structs from fasta file."""
@@ -35,7 +36,7 @@ class FastaIterator:
                 file_size = self._path_to_file.stat().st_size
 
             except Exception as e:
-                self._logger.exception("Failed to open file %s", self._path_to_file)
+                logger.exception("Failed to open file %s", self._path_to_file)
                 raise IteratorError from e
 
             if file_size == 0:
@@ -57,7 +58,7 @@ class FastaIterator:
                 yield file
 
         except Exception as e:
-            self._logger.exception("Failed to open file %s", self._path_to_file)
+            logger.exception("Failed to open file %s", self._path_to_file)
             raise IteratorError from e
 
     @staticmethod
@@ -75,7 +76,7 @@ class FastaIterator:
         end_position: int = resolved_chunk_range.end
 
         assert current_position >= 0
-        assert end_position > 0
+        assert end_position >= 0
 
         while not self._is_position_beyond_limit(current_position, end_position):
             raw_sequence_info: str = ""
@@ -134,7 +135,7 @@ class FastaIterator:
             )
 
         except InvalidRecordError as e:
-            self._logger.exception("Invalid file provided --> %s", self._path_to_file)
+            logger.exception("Invalid file provided --> %s", self._path_to_file)
             raise IteratorError(
                 f"Invalid file provided --> {self._path_to_file}"
             ) from e

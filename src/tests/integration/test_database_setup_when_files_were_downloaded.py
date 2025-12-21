@@ -51,7 +51,7 @@ async def _compose_dependencies(
     available_connections = await get_available_connections_amount(
         asdict(single_connection_config)
     )
-    workers_number = 8
+    workers_number = 4
     connection_pool_config: ConnectionPoolConfig = setup_connection_pool_config(
         **asdict(single_connection_config),
         workers_number=workers_number,
