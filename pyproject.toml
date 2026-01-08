@@ -25,9 +25,9 @@ dev = [
     "ruff>=0.12.0",
     "pre-commit>=4.2.0",
     "docker>=7.1.0",
-    "pytest-watcher",
     "radon>=6.0.1",
     "xenon>=0.9.3",
+    "pytest-watcher>=0.6.2",
 ]
 
 [tool.pytest.ini_options]
@@ -114,6 +114,3 @@ exclude_lines = [
     "@abstractmethod",
     "def .*\\(.*\\):\n        pass",
 ]
-
-[tool.uv.sources]
-pytest-watcher = { git = "https://github.com/HitokiriDeepWeb/pytest-watcher.git" }
